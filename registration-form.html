@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AgroConnect Portal - Farmer Registration</title>
+    <link rel="stylesheet" href="portal.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo">AgroConnect Portal</div>
+        <nav class="main-nav">
+            <a href="index.html">Home</a>
+            <a href="product.html">Products</a>
+            <a href="about-product.html">Price Comparison</a>
+            <a href="registration-form.html">Farmer Registration</a>
+            <a href="media.html">Media</a>
+            <a href="index.php">Manage Orders</a>
+        </nav>
+        <button id="themeToggle" class="theme-toggle">Dark Mode</button>
+        <div class="cart-info">Cart: <span id="cartCount">0</span> items</div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Crop Categories</h3>
+            <ul>
+                <li>All Crops</li>
+                <li>Grains</li>
+                <li>Vegetables</li>
+                <li>Fruits</li>
+                <li>Pulses</li>
+                <li>Oil Seeds</li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <section>
+                <h1>Farmer Registration</h1>
+                <p>This simple form is for demonstration only and does not store data in the database.</p>
+                <form class="simple-form">
+                    <div class="form-row">
+                        <label for="farmerName">Farmer Name</label>
+                        <input type="text" id="farmerName" name="farmerName" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="farmerEmail">Email</label>
+                        <input type="email" id="farmerEmail" name="farmerEmail" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="farmerPhone">Phone</label>
+                        <input type="tel" id="farmerPhone" name="farmerPhone" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="farmLocation">Farm Location</label>
+                        <input type="text" id="farmLocation" name="farmLocation" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="mainCrop">Main Crop</label>
+                        <input type="text" id="mainCrop" name="mainCrop" required>
+                    </div>
+                    <button type="button" id="registerFarmerBtn">Register (Demo)</button>
+                </form>
+                <p id="registrationMessage" class="info-text"></p>
+            </section>
+        </main>
+    </div>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 AgroConnect - Farmer registration demo.</p>
+    </footer>
+</body>
+</html>

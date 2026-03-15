@@ -1,0 +1,357 @@
+/* Portal-specific stylesheet (keeps existing PHP style.css untouched) */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f5;
+    color: #1b5e20;
+}
+
+.main-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #2e7d32;
+    color: #ffffff;
+}
+
+.logo {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.main-nav a {
+    color: #e8f5e9;
+    text-decoration: none;
+    margin: 0 8px;
+    font-weight: 600;
+}
+
+.main-nav a:hover {
+    text-decoration: underline;
+}
+
+.theme-toggle {
+    margin-left: 10px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #a5d6a7;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.theme-toggle:hover {
+    background-color: #81c784;
+}
+
+.cart-info {
+    margin-left: 15px;
+    font-size: 0.95rem;
+}
+
+.container {
+    display: flex;
+    min-height: calc(100vh - 80px);
+}
+
+.sidebar {
+    width: 220px;
+    background-color: #e8f5e9;
+    padding: 20px;
+}
+
+.sidebar h3 {
+    margin-top: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 6px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.sidebar li:hover {
+    background-color: #c8e6c9;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+.hero {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+}
+
+.highlight-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.highlight-card {
+    flex: 1 1 220px;
+    background-color: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.highlight-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.product-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.product-toolbar input,
+.product-toolbar select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.product-card {
+    flex: 1 1 220px;
+    background-color: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.product-card h3 {
+    margin-top: 0;
+}
+
+.product-card button {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #2e7d32;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.product-card button:hover {
+    background-color: #1b5e20;
+}
+
+.checkout-section {
+    margin-top: 30px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+}
+
+.form-row {
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row label {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.form-row input,
+.form-row textarea,
+.form-row select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.form-row.inline {
+    display: flex;
+    gap: 16px;
+}
+
+.form-row.inline > div {
+    flex: 1;
+}
+
+#totalPriceDisplay {
+    font-weight: bold;
+    color: #1b5e20;
+}
+
+button[type="submit"],
+.simple-form button {
+    padding: 10px 16px;
+    border-radius: 4px;
+    border: none;
+    background-color: #2e7d32;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button[type="submit"]:disabled {
+    background-color: #9e9e9e;
+    cursor: not-allowed;
+}
+
+button[type="submit"]:hover:not(:disabled),
+.simple-form button:hover {
+    background-color: #1b5e20;
+}
+
+.price-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+}
+
+.price-table th,
+.price-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+.price-table th {
+    background-color: #a5d6a7;
+}
+
+.simple-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+    max-width: 450px;
+}
+
+.info-text {
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+.media-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.media-item {
+    flex: 1 1 260px;
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+}
+
+.media-item img {
+    width: 100%;
+    border-radius: 6px;
+}
+
+.video-wrapper {
+    margin-top: 30px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+}
+
+.main-footer {
+    background-color: #2e7d32;
+    color: #ffffff;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* Validation styles */
+
+.error {
+    border-color: #e53935 !important;
+}
+
+.success {
+    border-color: #2e7d32 !important;
+}
+
+.error-message {
+    color: #e53935;
+    font-size: 0.85rem;
+}
+
+/* Dark theme */
+
+body.dark-theme {
+    background-color: #263238;
+    color: #e0f2f1;
+}
+
+body.dark-theme .main-header {
+    background-color: #004d40;
+}
+
+body.dark-theme .sidebar {
+    background-color: #37474f;
+}
+
+body.dark-theme .sidebar li:hover {
+    background-color: #455a64;
+}
+
+body.dark-theme .hero,
+body.dark-theme .highlight-card,
+body.dark-theme .product-card,
+body.dark-theme .checkout-section,
+body.dark-theme .simple-form,
+body.dark-theme .media-item,
+body.dark-theme .video-wrapper {
+    background-color: #37474f;
+    color: #e0f2f1;
+}
+
+body.dark-theme .price-table th {
+    background-color: #00695c;
+}
+
+body.dark-theme .price-table td {
+    background-color: #455a64;
+}
+
+body.dark-theme .main-footer {
+    background-color: #004d40;
+}
