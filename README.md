@@ -1,127 +1,120 @@
-# AgroConnect / AgriCommerce Mini Project
+# AgroConnect – AgriCommerce Portal
 
-A simple agricultural marketplace portal built as a Web Programming Laboratory mini project.
+A web-based agricultural marketplace built as a college mini project. It lets farmers list crops and buyers browse/order them — all through a simple, role-based portal.
 
-The portal demonstrates:
+---
 
-- HTML, CSS, and a multi-page layout
-- JavaScript DOM manipulation, events, arrays, and calculations
-- Client-side form validation
-- PHP + MySQL CRUD operations using XAMPP
+## What it does
 
-## Project Structure
+- Farmers can log in, manage their crop listings, and track orders
+- Buyers (users) can browse products, add to cart, checkout, and see their order history
+- Admin gets a dashboard to manage all users and orders
+- Dark mode toggle that actually works and remembers your preference
 
-- Frontend portal pages
-  - `index.html` – Home page
-  - `product.html` – Products listing + checkout form with validation
-  - `about-product.html` – Price comparison page with styled table
-  - `registration-form.html` – Farmer registration demo form
-  - `media.html` – Media gallery and embedded video
-- Styles and scripts
-  - `portal.css` – Main portal styling and dark mode
-  - `script.js` – JavaScript interactions, theme toggle, cart, filters
-  - `validation.js` – Client-side checkout form validation
-- PHP CRUD (Experiment 5)
-  - `db.php` – MySQL connection using mysqli
-  - `index.php` – Crop orders CRUD interface (Create + Read)
-  - `insert.php` – Insert new order
-  - `edit.php` – Load existing order for editing
-  - `update.php` – Update order
-  - `delete.php` – Delete order
-  - `style.css` – Styling used by the PHP CRUD pages
+---
 
-## Technology Stack
+## Pages & Files
 
-- HTML, CSS, JavaScript (no frameworks)
+**Frontend**
+- `index.html` – Landing page
+- `product.html` – Product listing with search/filter
+- `about-product.html` – Price comparison table
+- `registration-form.html` – Demo registration form
+- `media.html` – Gallery + video section
+
+**Styles & Scripts**
+- `portal.css` – Main stylesheet (includes dark mode styles)
+- `script.js` – JS stuff: theme toggle, cart counter, filters, DOM updates
+- `validation.js` – Checkout form validation logic
+
+**PHP (CRUD + Auth)**
+- `login.php` / `logout.php` / `register.php` – Auth flow
+- `index.php` – Crop orders CRUD (create + read)
+- `insert.php`, `edit.php`, `update.php`, `delete.php` – Basic CRUD ops
+- `cart.php`, `add_to_cart.php`, `get_cart_count.php` – Cart system
+- `checkout.php`, `process_checkout.php`, `order_success.php` – Order flow
+- `my_orders.php` – User order history
+- `admin_dashboard.php` – Admin: manage all orders + users
+- `farmer_dashboard.php` – Farmer: view their listed crops + orders
+- `user_dashboard.php` – Buyer: quick overview
+- `update_order_status.php`, `update_all_orders_status.php` – Order status updates
+- `db.php` – MySQL connection
+
+**Includes**
+- `includes/header.php` – Shared nav header
+- `includes/footer.php` – Shared footer
+
+---
+
+## Tech Stack
+
+- HTML, CSS, JavaScript (vanilla, no frameworks)
 - PHP (procedural, mysqli)
 - MySQL via XAMPP / phpMyAdmin
 
+---
+
 ## Database Setup
 
-1. Start Apache and MySQL from the XAMPP Control Panel.
-2. Open phpMyAdmin: `http://localhost/phpmyadmin`.
-3. Create the database:
+1. Open XAMPP Control Panel and start **Apache** and **MySQL**
+2. Go to `http://localhost/phpmyadmin`
+3. Run this to get started:
 
-   ```sql
-   CREATE DATABASE IF NOT EXISTS agroconnect;
-   ```
-
-4. Select the `agroconnect` database and create the `orders` table:
-
-   ```sql
-   CREATE TABLE IF NOT EXISTS orders (
-     id INT AUTO_INCREMENT PRIMARY KEY,
-     farmer_name VARCHAR(100) NOT NULL,
-     email VARCHAR(100) NOT NULL,
-     crop_name VARCHAR(100) NOT NULL,
-     category VARCHAR(50) NOT NULL,
-     quantity INT NOT NULL,
-     price INT NOT NULL,
-     location VARCHAR(100) NOT NULL,
-     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-   );
-   ```
-
-## PHP Database Connection
-
-`db.php` connects to MySQL using mysqli:
-
-```php
-$host = "localhost";
-$user = "root";
-$password = ""; // default XAMPP root password
-$database = "agroconnect";
-
-$conn = mysqli_connect($host, $user, $password, $database);
-
-if (!$conn) {
-    die("Connection Failed: " . mysqli_connect_error());
-}
+```sql
+CREATE DATABASE IF NOT EXISTS agroconnect;
 ```
 
-Update `$password` only if you have changed the MySQL root password.
+4. Select the `agroconnect` database and create the orders table:
 
-## Running the Project on XAMPP
+```sql
+CREATE TABLE IF NOT EXISTS orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  farmer_name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  crop_name VARCHAR(100) NOT NULL,
+  category VARCHAR(50) NOT NULL,
+  quantity INT NOT NULL,
+  price INT NOT NULL,
+  location VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
 
-1. Copy the project folder into:
+> You'll also need `users` and `cart` tables for the auth + cart features. Check `db.php` or any attached SQL dump for the full schema.
 
+---
+
+## Running Locally
+
+1. Drop the project folder into:
    ```
    C:\xampp\htdocs\agroconnect
    ```
 
-2. Ensure Apache and MySQL are running in XAMPP.
-3. (Optional but recommended) In Apache `httpd.conf`, make `index.html` the first entry in `DirectoryIndex` so the portal opens by default:
+2. Start Apache and MySQL from XAMPP
 
-   ```apache
-   DirectoryIndex index.html index.php ...
-   ```
+3. Set up the database (steps above)
 
-4. Open the portal in your browser:
-
+4. Visit in your browser:
    ```
    http://localhost/agroconnect
    ```
 
-5. Use the **Manage Orders** navigation link to open the PHP CRUD interface (index.php), where you can:
-   - Add crop orders
-   - View all orders
-   - Edit and delete existing orders
+5. Login or register, then explore the portal based on your role (admin / farmer / user)
 
-## Experiments Covered
+> If you changed MySQL root password, update it in `db.php`.
 
-- **Experiment 2 – CSS3 Web Portal**
-  - Multi-page portal with shared header, footer, sidebar, and responsive layout
-  - Styled crop cards, tables, and forms using a single external stylesheet
-- **Experiment 3 – JavaScript Concepts**
-  - DOM updates (welcome message, dynamic product cards)
-  - Variables, arrays, operators, discount logic (if–else, switch)
-  - Search/filter, theme toggle, event handling, cart counter
-- **Experiment 4 – Form Validation**
-  - Checkout form with real-time validation and error messages
-  - Email, phone, strong password, confirm password, zip, card, expiry, CVV
-  - Disabled submit button until the form is fully valid
-- **Experiment 5 – PHP MySQL CRUD**
-  - Create, Read, Update, Delete operations on `orders` table
-  - Uses mysqli and a shared `db.php` connection
+---
 
-This structure keeps the project beginner-friendly while demonstrating all required concepts for the Web Programming Laboratory mini project.
+## Lab Experiments Covered
+
+| Experiment | What's covered |
+|---|---|
+| Exp 2 – CSS3 Web Portal | Multi-page layout, shared header/footer, crop cards, responsive design |
+| Exp 3 – JavaScript | DOM manipulation, arrays, discount logic, search/filter, cart counter, dark mode toggle |
+| Exp 4 – Form Validation | Real-time validation on checkout: email, phone, password strength, card details |
+| Exp 5 – PHP MySQL CRUD | Full Create/Read/Update/Delete on orders table using mysqli |
+
+---
+
+Made for the Web Programming Lab mini project — by Abhiraj Kochale
