@@ -43,105 +43,118 @@ function initThemeToggle() {
   }
 }
 
-// Initialize products page: render cards, wire search/filter
+// Initialize products page: wire search/filter and Add to Cart
 function initProductsPage() {
   var grid = document.getElementById("productGrid");
   if (!grid) return;
 
-  grid.innerHTML = "";
-  for (var i = 0; i < productNames.length; i++) {
-    var card = document.createElement("div");
-    card.className = "card p-0 overflow-hidden product-card";
-    card.dataset.category = productCategories[i];
-    card.dataset.name = productNames[i].toLowerCase();
-
-    // Random crop image for variety (using Unsplash)
-    var imgId = 1500382 + i;
-    var img = document.createElement("img");
-    img.src = "https://images.unsplash.com/photo-" + imgId + "?auto=format&fit=crop&w=400&q=80";
-    img.style.cssText = "width:100%; height:180px; object-fit:cover;";
-
-    var content = document.createElement("div");
-    content.style.padding = "1.5rem";
-
-    var title = document.createElement("h3");
-    title.textContent = productNames[i];
-    title.style.marginBottom = "0.5rem";
-
-    var categoryBadge = document.createElement("span");
-    categoryBadge.textContent = productCategories[i];
-    categoryBadge.style.cssText = "display:inline-block; background:var(--bg-light); color:var(--primary-color); padding:4px 12px; border-radius:12px; font-size:0.75rem; font-weight:600; margin-bottom:1rem;";
-
-    var priceP = document.createElement("p");
-    priceP.innerHTML = "<strong>Rs. " + productPrices[i] + "</strong> / kg";
-    priceP.style.fontSize = "1.1rem";
-
-    var addBtn = document.createElement("button");
-    addBtn.className = "btn btn-primary btn-block mt-lg";
-    addBtn.style.marginTop = "1rem";
-    addBtn.textContent = "Add to Cart";
-    
-    if (!productAvailability[i]) {
-      addBtn.disabled = true;
-      addBtn.textContent = "Out of Stock";
-      addBtn.style.background = "#ccc";
-    }
-
-    addBtn.addEventListener("click", (function (index) {
-      return function () {
-        addToCart(index);
-      };
-    })(i));
-
-    content.appendChild(categoryBadge);
-    content.appendChild(title);
-    content.appendChild(priceP);
-    content.appendChild(addBtn);
-
-    card.appendChild(img);
-    card.appendChild(content);
-
-    grid.appendChild(card);
-  }
-
-  // Search/filter products
+  // Search/filter/sort products
   var searchInput = document.getElementById("searchInput");
   var categoryFilter = document.getElementById("categoryFilter");
+  var sortFilter = document.getElementById("sortFilter");
 
   function applyFilters() {
-    var searchTerm = searchInput.value.toLowerCase();
-    var selectedCategory = categoryFilter.value;
+    var searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+    var selectedCategory = categoryFilter ? categoryFilter.value : "all";
+    var sortValue = sortFilter ? sortFilter.value : "default";
 
-    var cards = grid.getElementsByClassName("product-card");
-    for (var j = 0; j < cards.length; j++) {
-      var c = cards[j];
-      var name = c.dataset.name;
+    var cards = Array.from(grid.getElementsByClassName("product-card"));
+
+    // Filter
+    cards.forEach(function(c) {
+      // name and category are stored in data attributes in the HTML
+      var name = c.dataset.name.toLowerCase();
       var category = c.dataset.category;
 
       var matchesSearch = name.indexOf(searchTerm) !== -1;
       var matchesCategory = selectedCategory === "all" || category === selectedCategory;
 
-      c.style.display = matchesSearch && matchesCategory ? "block" : "none";
+      if (matchesSearch && matchesCategory) {
+          c.style.display = "block";
+      } else {
+          c.style.display = "none";
+      }
+    });
+
+    // Sort visible cards
+    var visibleCards = cards.filter(c => c.style.display !== "none");
+    if (sortValue !== "default") {
+        visibleCards.sort(function(a, b) {
+            if (sortValue === "price_asc" || sortValue === "price_desc") {
+                var pA = parseFloat(a.dataset.price);
+                var pB = parseFloat(b.dataset.price);
+                return sortValue === "price_asc" ? pA - pB : pB - pA;
+            } else if (sortValue === "name_asc") {
+                var nA = a.dataset.name;
+                var nB = b.dataset.name;
+                return nA.localeCompare(nB);
+            }
+            return 0;
+        });
     }
+
+    // Re-append to grid to change visual order
+    cards.forEach(c => c.remove());
+    visibleCards.forEach(c => grid.appendChild(c));
+    // append hidden ones at the end
+    var hiddenCards = cards.filter(c => c.style.display === "none");
+    hiddenCards.forEach(c => grid.appendChild(c));
   }
 
   if (searchInput) searchInput.addEventListener("input", applyFilters);
   if (categoryFilter) categoryFilter.addEventListener("change", applyFilters);
+  if (sortFilter) sortFilter.addEventListener("change", applyFilters);
+  
+  // Wire up Add to Cart buttons
+  var addBtns = grid.querySelectorAll(".add-to-cart-btn");
+  addBtns.forEach(function(btn) {
+      btn.addEventListener("click", function() {
+          var productId = this.dataset.id;
+          var productName = this.dataset.name;
+          addToCart(productId, productName);
+      });
+  });
+  
+  // Fetch initial cart count
+  updateCartCount();
 }
 
-// Cart functionality
-function addToCart(productIndex) {
-  var name = productNames[productIndex];
-  var price = productPrices[productIndex];
+function updateCartCount() {
+    fetch('get_cart_count.php')
+        .then(response => response.json())
+        .then(data => {
+            if (cartCountSpan) {
+                cartCountSpan.textContent = data.count || 0;
+            }
+        })
+        .catch(error => console.error('Error fetching cart count:', error));
+}
 
-  cart.push({ name: name, price: price });
+// Cart functionality (Real-time DB backed)
+function addToCart(productId, productName) {
+    if(!productId) return;
+    
+    var formData = new FormData();
+    formData.append('product_id', productId);
+    formData.append('quantity', 1);
 
-  if (cartCountSpan) {
-    cartCountSpan.textContent = cart.length;
-  }
-
-  // Show a nice snackbar/toast instead of alert if possible, but keeping it simple as per rules
-  alert(name + " added to cart! (Demo)");
+    fetch('add_to_cart.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(productName + " added to cart!");
+            updateCartCount();
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while adding to cart.');
+    });
 }
 
 // Simple farmer registration demo message

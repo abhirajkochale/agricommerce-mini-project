@@ -22,7 +22,8 @@ $role = $_SESSION['role'];
 
 if ($role === 'admin') {
     $result = mysqli_query($conn, "SELECT * FROM orders WHERE id=$id");
-} else {
+}
+else {
     $result = mysqli_query($conn, "SELECT * FROM orders WHERE id=$id AND user_id=$user_id");
 }
 

@@ -15,7 +15,7 @@
         </div>
     </footer>
     
-    <script src="script.js"></script>
-    <script src="validation.js"></script>
+    <script src="script.js?v=<?php echo time(); ?>"></script>
+    <script src="validation.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

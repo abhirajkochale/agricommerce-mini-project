@@ -22,17 +22,18 @@ if ($type === 'user' && $role === 'admin') {
     mysqli_query($conn, "DELETE FROM orders WHERE user_id=$id");
     // Delete user
     mysqli_query($conn, "DELETE FROM users WHERE id=$id");
-    
+
     header("Location: admin_dashboard.php");
     exit;
 }
 
 // Handle order deletion
 if ($role === 'admin') {
-    mysqli_query($conn,"DELETE FROM orders WHERE id=$id");
-} else {
+    mysqli_query($conn, "DELETE FROM orders WHERE id=$id");
+}
+else {
     // Basic owner check
-    mysqli_query($conn,"DELETE FROM orders WHERE id=$id AND user_id=$user_id");
+    mysqli_query($conn, "DELETE FROM orders WHERE id=$id AND user_id=$user_id");
 }
 
 header("Location: index.php");

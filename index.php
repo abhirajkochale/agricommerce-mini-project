@@ -3,11 +3,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// If not logged in, show the landing page (current index.php logic)
 if (!isset($_SESSION['user_id'])) {
     $pageTitle = "Home";
     include 'includes/header.php';
-    ?>
+?>
     <div class="container">
         <section class="hero">
             <h1>Welcome to AgroConnect</h1>
@@ -44,14 +43,15 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// If logged in, redirect based on role
 $role = $_SESSION['role'] ?? 'user';
 
 if ($role === 'admin') {
     header('Location: admin_dashboard.php');
-} elseif ($role === 'farmer') {
+}
+elseif ($role === 'farmer') {
     header('Location: farmer_dashboard.php');
-} else {
+}
+else {
     header('Location: user_dashboard.php');
 }
 exit;

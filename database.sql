@@ -42,3 +42,14 @@ ON DUPLICATE KEY UPDATE role='admin';
 INSERT INTO users (name, email, password, role) 
 VALUES ('John Farmer', 'farmer@test.com', '$2y$10$p4Q6R7S8T9U0V1W2X3Y4Z5A6B7C8D9E0F1G2H3I4J5K6L7M8N9O0P', 'farmer')
 ON DUPLICATE KEY UPDATE role='farmer';
+
+-- 5. Create Cart Table
+CREATE TABLE IF NOT EXISTS cart (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES orders(id) ON DELETE CASCADE
+);

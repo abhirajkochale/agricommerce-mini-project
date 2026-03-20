@@ -18,14 +18,15 @@ $role = $_SESSION['role'];
 
 // Only owner or admin can update
 if ($role === 'admin') {
-    mysqli_query($conn,"UPDATE orders SET
+    mysqli_query($conn, "UPDATE orders SET
         crop_name='$crop',
         quantity='$quantity',
         price='$price',
         location='$location'
         WHERE id=$id");
-} else {
-    mysqli_query($conn,"UPDATE orders SET
+}
+else {
+    mysqli_query($conn, "UPDATE orders SET
         crop_name='$crop',
         quantity='$quantity',
         price='$price',

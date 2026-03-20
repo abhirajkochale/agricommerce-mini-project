@@ -6,8 +6,8 @@ require 'db.php';
 
 $errors = [];
 $email = '';
-        // Create users table if it doesn't exist (safety check)
-        $createSql = "CREATE TABLE IF NOT EXISTS users (
+// Create users table if it doesn't exist (safety check)
+$createSql = "CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(100) NOT NULL,
             email VARCHAR(100) NOT NULL UNIQUE,
@@ -15,12 +15,12 @@ $email = '';
             role VARCHAR(20) DEFAULT 'user',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )";
-        mysqli_query($conn, $createSql);
+mysqli_query($conn, $createSql);
 
-        // Add role column if it doesn't exist
-        mysqli_query($conn, "ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'user'");
+// Add role column if it doesn't exist
+mysqli_query($conn, "ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'user'");
 
-        // Look up user by email
+// Look up user by email
 $registered = isset($_GET['registered']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -29,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($email === '') {
         $errors['email'] = 'Email is required.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    }
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Please enter a valid email address.';
     }
 
@@ -50,23 +51,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['user_name'] = $user_name;
                     $_SESSION['role'] = $user_role;
                     mysqli_stmt_close($stmt);
-                    
+
                     if ($user_role === 'admin') {
                         header('Location: admin_dashboard.php');
-                    } elseif ($user_role === 'farmer') {
+                    }
+                    elseif ($user_role === 'farmer') {
                         header('Location: farmer_dashboard.php');
-                    } else {
+                    }
+                    else {
                         header('Location: user_dashboard.php');
                     }
                     exit;
-                } else {
+                }
+                else {
                     $errors['general'] = 'Invalid email or password.';
                 }
-            } else {
+            }
+            else {
                 $errors['general'] = 'Invalid email or password.';
             }
             mysqli_stmt_close($stmt);
-        } else {
+        }
+        else {
             $errors['general'] = 'Something went wrong. Please try again.';
         }
     }
@@ -83,11 +89,13 @@ include 'includes/header.php';
 
         <?php if ($registered): ?>
             <div class="alert alert-success">Registration successful! Please log in.</div>
-        <?php endif; ?>
+        <?php
+endif; ?>
 
         <?php if (!empty($errors['general'])): ?>
             <div class="alert alert-danger"><?php echo htmlspecialchars($errors['general']); ?></div>
-        <?php endif; ?>
+        <?php
+endif; ?>
 
         <form method="POST" action="login.php" id="loginForm" novalidate>
             <div class="form-group">
@@ -97,7 +105,8 @@ include 'includes/header.php';
                        placeholder="Enter your email" required>
                 <?php if (!empty($errors['email'])): ?>
                     <small class="error-message"><?php echo htmlspecialchars($errors['email']); ?></small>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <small class="error-message" id="emailError"></small>
             </div>
 
@@ -107,7 +116,8 @@ include 'includes/header.php';
                        placeholder="Enter your password" required>
                 <?php if (!empty($errors['password'])): ?>
                     <small class="error-message"><?php echo htmlspecialchars($errors['password']); ?></small>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <small class="error-message" id="passwordError"></small>
             </div>
 

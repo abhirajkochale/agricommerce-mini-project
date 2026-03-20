@@ -20,32 +20,38 @@ $activePage = basename($_SERVER['PHP_SELF'], ".php");
             <a href="index.php" class="logo">AgroConnect</a>
         </div>
         <nav class="main-nav">
-            <a href="index.php" class="<?php echo ($activePage == 'index') ? 'active' : ''; ?>">Home</a>
+            <a href="index.php" class="<?php echo($activePage == 'index') ? 'active' : ''; ?>">Home</a>
             
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php if ($_SESSION['role'] === 'admin'): ?>
-                    <a href="admin_dashboard.php" class="<?php echo ($activePage == 'admin_dashboard') ? 'active' : ''; ?>">Admin Panel</a>
-                <?php elseif ($_SESSION['role'] === 'farmer'): ?>
-                    <a href="farmer_dashboard.php" class="<?php echo ($activePage == 'farmer_dashboard') ? 'active' : ''; ?>">My Listings</a>
-                <?php else: ?>
-                    <a href="user_dashboard.php" class="<?php echo ($activePage == 'user_dashboard') ? 'active' : ''; ?>">Marketplace</a>
-                <?php endif; ?>
+                    <a href="admin_dashboard.php" class="<?php echo($activePage == 'admin_dashboard') ? 'active' : ''; ?>">Admin Panel</a>
+                <?php
+    elseif ($_SESSION['role'] === 'farmer'): ?>
+                    <a href="farmer_dashboard.php" class="<?php echo($activePage == 'farmer_dashboard') ? 'active' : ''; ?>">My Listings</a>
+                <?php
+    else: ?>
+                    <a href="user_dashboard.php" class="<?php echo($activePage == 'user_dashboard') ? 'active' : ''; ?>">Marketplace</a>
+                    <a href="my_orders.php" class="<?php echo($activePage == 'my_orders') ? 'active' : ''; ?>">My Orders</a>
+                <?php
+    endif; ?>
                 
                 <div class="user-menu">
                     <span class="welcome-user">Hi, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                     <a href="logout.php" class="logout-btn">Logout</a>
                 </div>
-            <?php else: ?>
-                <a href="login.php" class="<?php echo ($activePage == 'login') ? 'active' : ''; ?>">Login</a>
-                <a href="register.php" class="register-nav-btn <?php echo ($activePage == 'register') ? 'active' : ''; ?>">Register</a>
-            <?php endif; ?>
+            <?php
+else: ?>
+                <a href="login.php" class="<?php echo($activePage == 'login') ? 'active' : ''; ?>">Login</a>
+                <a href="register.php" class="register-nav-btn <?php echo($activePage == 'register') ? 'active' : ''; ?>">Register</a>
+            <?php
+endif; ?>
         </nav>
         <div class="header-actions">
             <button id="themeToggle" class="theme-toggle" title="Toggle Dark/Light Mode">
                 <span class="icon">🌙</span>
             </button>
-            <div class="cart-info" title="View Cart">
+            <a href="cart.php" class="cart-info" title="View Cart" style="text-decoration:none; color:inherit;">
                 🛒 <span id="cartCount">0</span>
-            </div>
+            </a>
         </div>
     </header>

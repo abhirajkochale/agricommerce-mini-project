@@ -52,9 +52,9 @@ $farmerCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM
                 </thead>
                 <tbody>
                     <?php
-                    $users = mysqli_query($conn, "SELECT * FROM users");
-                    while($u = mysqli_fetch_assoc($users)):
-                    ?>
+$users = mysqli_query($conn, "SELECT * FROM users");
+while ($u = mysqli_fetch_assoc($users)):
+?>
                     <tr>
                         <td>#<?php echo $u['id']; ?></td>
                         <td><?php echo htmlspecialchars($u['name']); ?></td>
@@ -64,7 +64,8 @@ $farmerCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM
                             <a href="delete.php?type=user&id=<?php echo $u['id']; ?>" class="btn btn-danger-light btn-small" onclick="return confirm('Delete this user and all their crops?');">Delete</a>
                         </td>
                     </tr>
-                    <?php endwhile; ?>
+                    <?php
+endwhile; ?>
                 </tbody>
             </table>
         </div>
@@ -85,9 +86,9 @@ $farmerCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM
                 </thead>
                 <tbody>
                     <?php
-                    $crops = mysqli_query($conn, "SELECT o.*, u.name as farmer_name FROM orders o JOIN users u ON o.user_id = u.id");
-                    while($c = mysqli_fetch_assoc($crops)):
-                    ?>
+$crops = mysqli_query($conn, "SELECT o.*, u.name as farmer_name FROM orders o JOIN users u ON o.user_id = u.id");
+while ($c = mysqli_fetch_assoc($crops)):
+?>
                     <tr>
                         <td>#<?php echo $c['id']; ?></td>
                         <td><?php echo htmlspecialchars($c['crop_name']); ?></td>
@@ -97,7 +98,8 @@ $farmerCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM
                             <a href="delete.php?id=<?php echo $c['id']; ?>" class="btn btn-danger-light btn-small" onclick="return confirm('Delete this listing?');">Delete</a>
                         </td>
                     </tr>
-                    <?php endwhile; ?>
+                    <?php
+endwhile; ?>
                 </tbody>
             </table>
         </div>

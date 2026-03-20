@@ -16,14 +16,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $role = $_POST['role'] ?? 'user';
 
-    if ($name === '') $errors['name'] = 'Name is required.';
+    if ($name === '')
+        $errors['name'] = 'Name is required.';
     if ($email === '') {
         $errors['email'] = 'Email is required.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    }
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Invalid email format.';
     }
-    if (strlen($password) < 6) $errors['password'] = 'Password must be at least 6 characters.';
-    if ($password !== $confirm_password) $errors['confirm_password'] = 'Passwords do not match.';
+    if (strlen($password) < 6)
+        $errors['password'] = 'Password must be at least 6 characters.';
+    if ($password !== $confirm_password)
+        $errors['confirm_password'] = 'Passwords do not match.';
 
     if (empty($errors)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -34,7 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mysqli_stmt_close($stmt);
                 header('Location: login.php?registered=1');
                 exit;
-            } else {
+            }
+            else {
                 $errors['general'] = 'Email already exists or database error.';
             }
             mysqli_stmt_close($stmt);
@@ -53,7 +58,8 @@ include 'includes/header.php';
 
         <?php if (!empty($errors['general'])): ?>
             <div class="alert alert-danger"><?php echo htmlspecialchars($errors['general']); ?></div>
-        <?php endif; ?>
+        <?php
+endif; ?>
 
         <form method="POST" action="register.php" id="registerForm" novalidate>
             <div class="form-group">
@@ -63,7 +69,8 @@ include 'includes/header.php';
                        placeholder="Enter your full name" required>
                 <?php if (!empty($errors['name'])): ?>
                     <small class="error-message"><?php echo htmlspecialchars($errors['name']); ?></small>
-                <?php endif; ?>
+                <?php
+endif; ?>
             </div>
 
             <div class="form-group">
@@ -73,7 +80,8 @@ include 'includes/header.php';
                        placeholder="Enter your email" required>
                 <?php if (!empty($errors['email'])): ?>
                     <small class="error-message"><?php echo htmlspecialchars($errors['email']); ?></small>
-                <?php endif; ?>
+                <?php
+endif; ?>
             </div>
 
             <div class="form-group">
@@ -91,7 +99,8 @@ include 'includes/header.php';
                            placeholder="Min 6 chars" required>
                     <?php if (!empty($errors['password'])): ?>
                         <small class="error-message"><?php echo htmlspecialchars($errors['password']); ?></small>
-                    <?php endif; ?>
+                    <?php
+endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -100,7 +109,8 @@ include 'includes/header.php';
                            placeholder="Re-enter" required>
                     <?php if (!empty($errors['confirm_password'])): ?>
                         <small class="error-message"><?php echo htmlspecialchars($errors['confirm_password']); ?></small>
-                    <?php endif; ?>
+                    <?php
+endif; ?>
                 </div>
             </div>
 
