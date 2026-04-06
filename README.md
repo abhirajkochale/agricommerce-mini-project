@@ -117,4 +117,4 @@ CREATE TABLE IF NOT EXISTS orders (
 
 ---
 
-Made for the Web Programming Lab mini project — by Abhiraj Kochale
+Made for the Web Programming Lab mini project.
