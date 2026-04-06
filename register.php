@@ -13,36 +13,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
-
     $role = $_POST['role'] ?? 'user';
 
-    if ($name === '')
-        $errors['name'] = 'Name is required.';
+    // Basic Validation
+    if ($name === '') $errors['name'] = 'Name is required.';
     if ($email === '') {
         $errors['email'] = 'Email is required.';
-    }
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Invalid email format.';
     }
-    if (strlen($password) < 6)
-        $errors['password'] = 'Password must be at least 6 characters.';
-    if ($password !== $confirm_password)
-        $errors['confirm_password'] = 'Passwords do not match.';
+    if (strlen($password) < 6) $errors['password'] = 'Password must be at least 6 characters.';
+    if ($password !== $confirm_password) $errors['confirm_password'] = 'Passwords do not match.';
 
     if (empty($errors)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = mysqli_prepare($conn, 'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)');
+        
+        $sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $sql);
+        
         if ($stmt) {
-            mysqli_stmt_bind_param($stmt, 'ssss', $name, $email, $hashed_password, $role);
+            mysqli_stmt_bind_param($stmt, "ssss", $name, $email, $hashed_password, $role);
             if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_close($stmt);
                 header('Location: login.php?registered=1');
                 exit;
-            }
-            else {
+            } else {
                 $errors['general'] = 'Email already exists or database error.';
             }
             mysqli_stmt_close($stmt);
+        } else {
+            $errors['general'] = 'Something went wrong. Please try again.';
         }
     }
 }

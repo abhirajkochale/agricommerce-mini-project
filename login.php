@@ -6,31 +6,22 @@ require 'db.php';
 
 $errors = [];
 $email = '';
-// Create users table if it doesn't exist (safety check)
-$createSql = "CREATE TABLE IF NOT EXISTS users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            email VARCHAR(100) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL,
-            role VARCHAR(20) DEFAULT 'user',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )";
-mysqli_query($conn, $createSql);
 
-// Add role column if it doesn't exist
-mysqli_query($conn, "ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'user'");
+// Auto-fill logic from cookie
+if (isset($_COOKIE['user_email'])) {
+    $email = $_COOKIE['user_email'];
+}
 
-// Look up user by email
 $registered = isset($_GET['registered']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
+    $remember = isset($_POST['remember']);
 
     if ($email === '') {
         $errors['email'] = 'Email is required.';
-    }
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Please enter a valid email address.';
     }
 
@@ -39,40 +30,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $stmt = mysqli_prepare($conn, 'SELECT id, name, password, role FROM users WHERE email = ? LIMIT 1');
+        $sql = "SELECT id, name, password, role FROM users WHERE email = ? LIMIT 1";
+        $stmt = mysqli_prepare($conn, $sql);
+        
         if ($stmt) {
-            mysqli_stmt_bind_param($stmt, 's', $email);
+            mysqli_stmt_bind_param($stmt, "s", $email);
             mysqli_stmt_execute($stmt);
-            mysqli_stmt_bind_result($stmt, $user_id, $user_name, $hashed_password, $user_role);
+            $result = mysqli_stmt_get_result($stmt);
 
-            if (mysqli_stmt_fetch($stmt)) {
-                if (password_verify($password, $hashed_password)) {
-                    $_SESSION['user_id'] = $user_id;
-                    $_SESSION['user_name'] = $user_name;
-                    $_SESSION['role'] = $user_role;
-                    mysqli_stmt_close($stmt);
+            if ($result && mysqli_num_rows($result) > 0) {
+                $user = mysqli_fetch_assoc($result);
+                if (password_verify($password, $user['password'])) {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_name'] = $user['name'];
+                    $_SESSION['role'] = $user['role'];
 
-                    if ($user_role === 'admin') {
+                    // Cookie: Remember Me (7 days)
+                    if ($remember) {
+                        setcookie("user_email", $email, time() + (86400 * 7), "/");
+                    } else {
+                        if (isset($_COOKIE['user_email'])) {
+                            setcookie("user_email", "", time() - 3600, "/");
+                        }
+                    }
+
+                    if ($user['role'] === 'admin') {
                         header('Location: admin_dashboard.php');
-                    }
-                    elseif ($user_role === 'farmer') {
+                    } elseif ($user['role'] === 'farmer') {
                         header('Location: farmer_dashboard.php');
-                    }
-                    else {
+                    } else {
                         header('Location: user_dashboard.php');
                     }
                     exit;
-                }
-                else {
+                } else {
                     $errors['general'] = 'Invalid email or password.';
                 }
-            }
-            else {
+            } else {
                 $errors['general'] = 'Invalid email or password.';
             }
             mysqli_stmt_close($stmt);
-        }
-        else {
+        } else {
             $errors['general'] = 'Something went wrong. Please try again.';
         }
     }
@@ -119,6 +116,12 @@ endif; ?>
                 <?php
 endif; ?>
                 <small class="error-message" id="passwordError"></small>
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="remember" name="remember" 
+                       <?php echo isset($_COOKIE['user_email']) ? 'checked' : ''; ?>>
+                <label for="remember" style="margin-bottom: 0;">Remember Me</label>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block">Login</button>

@@ -1,7 +1,7 @@
 <?php
 $host = "localhost";
 $user = "root";
-$password = "";
+$password = ""; // Default XAMPP password is empty
 $database = "agroconnect";
 
 $conn = mysqli_connect($host, $user, $password, $database);
@@ -9,3 +9,4 @@ $conn = mysqli_connect($host, $user, $password, $database);
 if (!$conn) {
     die("Connection Failed: " . mysqli_connect_error());
 }
+?>

@@ -1,14 +1,7 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
-    header('Location: login.php');
-    exit;
-}
-
+require 'auth_check.php';
 require 'db.php';
+
 $pageTitle = "My Cart";
 include 'includes/header.php';
 
