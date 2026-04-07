@@ -24,25 +24,24 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
 if (mysqli_num_rows($result) > 0) {
-    // Update quantity
+
     $row = mysqli_fetch_assoc($result);
     $new_quantity = $row['quantity'] + $quantity;
     $cart_id = $row['id'];
-    
+
     $update_query = "UPDATE cart SET quantity = ? WHERE id = ?";
     $update_stmt = mysqli_prepare($conn, $update_query);
     mysqli_stmt_bind_param($update_stmt, "ii", $new_quantity, $cart_id);
-    if(mysqli_stmt_execute($update_stmt)){
+    if (mysqli_stmt_execute($update_stmt)) {
         echo json_encode(['success' => true, 'message' => 'Cart quantity updated']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to update cart']);
     }
 } else {
-    // Insert new
     $insert_query = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
     $insert_stmt = mysqli_prepare($conn, $insert_query);
     mysqli_stmt_bind_param($insert_stmt, "iii", $user_id, $product_id, $quantity);
-    if(mysqli_stmt_execute($insert_stmt)){
+    if (mysqli_stmt_execute($insert_stmt)) {
         echo json_encode(['success' => true, 'message' => 'Added to cart successfully']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to add to cart']);

@@ -85,16 +85,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     FOREIGN KEY (product_id) REFERENCES orders(id)         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================================
--- 7. SEED DATA — Sample users
---    Passwords are bcrypt hashes; replace with real hashes
---    generated via: password_hash('yourpassword', PASSWORD_DEFAULT)
---
---    Default credentials for testing:
---      Admin  → admin@agro.com   / admin123
---      Farmer → farmer@agro.com  / farmer123
---      Buyer  → buyer@agro.com   / buyer123
--- ============================================================
+
 
 INSERT INTO users (name, email, password, role) VALUES
   ('System Admin',
