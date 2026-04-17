@@ -16,7 +16,65 @@ window.addEventListener("DOMContentLoaded", function () {
   initThemeToggle();
   initProductsPage();
   initRegistrationDemo();
+
+  // Handle auto-triggering feedback modal after order
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('success') === 'order_placed') {
+      setTimeout(openFeedbackModal, 500); // Small delay for better UX
+  }
 });
+
+// Sticky header scroll effect
+window.addEventListener("scroll", function() {
+  const header = document.querySelector(".main-header");
+  if (header) {
+      if (window.scrollY > 50) {
+          header.classList.add("scrolled");
+      } else {
+          header.classList.remove("scrolled");
+      }
+  }
+});
+
+/**
+ * Modal System Control
+ */
+/**
+ * Modal System Control
+ */
+function openFeedbackModal() {
+    const modal = document.getElementById('feedbackModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        // Force a reflow before adding the 'show' class for the transition
+        modal.offsetHeight; 
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    }
+}
+
+function closeFeedbackModal() {
+    const modal = document.getElementById('feedbackModal');
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; // Restore scrolling
+        // Wait for transition to finish before hiding completely
+        setTimeout(() => {
+            if (!modal.classList.contains('show')) {
+                modal.style.display = 'none';
+            }
+        }, 300);
+    }
+}
+
+// Close modal when clicking outside the content
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('feedbackModal');
+    if (e.target === modal) {
+        closeFeedbackModal();
+    }
+});
+
 
 // Theme toggle (light/dark mode)
 function initThemeToggle() {
@@ -105,6 +163,19 @@ function initProductsPage() {
   if (categoryFilter) categoryFilter.addEventListener("change", applyFilters);
   if (sortFilter) sortFilter.addEventListener("change", applyFilters);
 
+  // Check for URL parameters to apply initial filters
+  var urlParams = new URLSearchParams(window.location.search);
+  var initialSearch = urlParams.get('search');
+  var initialCat = urlParams.get('cat');
+
+  if (initialSearch && searchInput) {
+      searchInput.value = initialSearch;
+      applyFilters();
+  } else if (initialCat && categoryFilter) {
+      categoryFilter.value = initialCat;
+      applyFilters();
+  }
+
   // Wire up Add to Cart buttons
   var addBtns = grid.querySelectorAll(".add-to-cart-btn");
   addBtns.forEach(function (btn) {
@@ -137,6 +208,11 @@ function addToCart(productId, productName) {
   var formData = new FormData();
   formData.append('product_id', productId);
   formData.append('quantity', 1);
+  
+  // CSRF token from global variable (set in dashboard PHP)
+  if (typeof CSRF_TOKEN !== 'undefined') {
+    formData.append('csrf_token', CSRF_TOKEN);
+  }
 
   fetch('add_to_cart.php', {
     method: 'POST',
@@ -145,16 +221,43 @@ function addToCart(productId, productName) {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        alert(productName + " added to cart!");
+        // Use a better visual feedback if possible, or stick to alert for simplicity
+        showGlobalAlert(productName + " added to cart successfully!", "success");
         updateCartCount();
       } else {
-        alert("Error: " + data.message);
+        showGlobalAlert("Error: " + data.message, "danger");
       }
     })
     .catch(error => {
       console.error('Error:', error);
-      alert('An error occurred while adding to cart.');
+      showGlobalAlert("An error occurred. Check browser console.", "danger");
     });
+}
+
+function showGlobalAlert(message, type) {
+    // Check if we have an alert container, if not create one
+    let container = document.getElementById('globalAlertContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'globalAlertContainer';
+        container.style.position = 'fixed';
+        container.style.top = '80px';
+        container.style.right = '20px';
+        container.style.zIndex = '9999';
+        container.style.maxWidth = '300px';
+        document.body.appendChild(container);
+    }
+    
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type}`;
+    alert.innerHTML = `<span>${message}</span>`;
+    container.appendChild(alert);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500);
+    }, 3000);
 }
 
 // Simple farmer registration demo message

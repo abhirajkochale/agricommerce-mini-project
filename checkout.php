@@ -1,15 +1,11 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require 'auth_check.php';
+require 'db.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
+if ($_SESSION['role'] !== 'user') {
     header('Location: login.php');
     exit;
 }
-
-require 'db.php';
-
 
 // Check if cart is empty
 $user_id = $_SESSION['user_id'];
@@ -24,6 +20,7 @@ if (!$row['total'] || $row['total'] <= 0) {
     header("Location: user_dashboard.php");
     exit;
 }
+mysqli_stmt_close($stmt);
 
 $pageTitle = "Checkout";
 include 'includes/header.php';
@@ -35,39 +32,51 @@ include 'includes/header.php';
         <p class="text-muted text-center mb-lg">Complete your purchase</p>
 
         <form action="process_checkout.php" method="POST" id="checkoutForm">
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+            
             <h3 class="mb-sm">Shipping Information</h3>
             <div class="form-group">
                 <label>Full Name</label>
                 <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($_SESSION['user_name']); ?>" required>
+                <small class="error-message"></small>
             </div>
             <div class="form-group">
                 <label>Delivery Address</label>
                 <textarea name="address" class="form-control" required rows="3" placeholder="Enter full address..."></textarea>
+                <small class="error-message"></small>
             </div>
             
             <h3 class="mb-sm mt-lg">Payment Details (Dummy Gateway)</h3>
-            <div class="alert alert-info mb-sm">This is a simulated checkout. No real money will be charged.</div>
+            <div class="alert alert-success mt-sm" style="background: #e3f2fd; color: #1976d2; border-color: #bbdefb;">
+                <span class="icon">ℹ️</span>
+                <span>This is a simulated checkout. No real money will be charged.</span>
+            </div>
             
             <div class="form-group">
                 <label>Name on Card</label>
                 <input type="text" name="card_name" class="form-control" required>
+                <small class="error-message"></small>
             </div>
             <div class="form-group">
                 <label>Card Number</label>
-                <input type="text" name="card_number" class="form-control" placeholder="XXXX-XXXX-XXXX-XXXX" required pattern="\d{4}-\d{4}-\d{4}-\d{4}|[0-9]{16}" title="16 digit card number">
+                <input type="text" name="card_number" class="form-control" placeholder="XXXX-XXXX-XXXX-XXXX" required>
+                <small class="error-message"></small>
             </div>
             <div class="grid-2">
                 <div class="form-group">
                     <label>Expiry (MM/YY)</label>
                     <input type="text" name="expiry" class="form-control" placeholder="12/26" required>
+                    <small class="error-message"></small>
                 </div>
                 <div class="form-group">
                     <label>CVV</label>
                     <input type="text" name="cvv" class="form-control" placeholder="123" maxlength="4" required>
+                    <small class="error-message"></small>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block mt-lg" style="font-size: 1.1rem; padding: 1rem;">Pay Now</button>
+            <button type="submit" class="btn btn-primary btn-block mt-lg" style="font-size: 1.1rem; padding: 1rem;" id="checkoutSubmit">Pay Now & Confirm Order</button>
+            <a href="cart.php" class="btn btn-block btn-outline mt-sm">Back to Cart</a>
         </form>
     </div>
 </div>

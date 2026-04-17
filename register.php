@@ -5,45 +5,77 @@ if (session_status() === PHP_SESSION_NONE) {
 require 'db.php';
 check_tables_exist($conn);
 
+// CSRF Token generation
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $errors = [];
 $name = '';
 $email = '';
+$role = 'user';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF Validation
+    $user_token = $_POST['csrf_token'] ?? '';
+    if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $user_token)) {
+        die("CSRF token validation failed.");
+    }
+
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     $role = $_POST['role'] ?? 'user';
 
-    // Basic Validation
-    if ($name === '') $errors['name'] = 'Name is required.';
-    if ($email === '') {
-        $errors['email'] = 'Email is required.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors['email'] = 'Invalid email format.';
+    // Server-side Validation (consistent with JS)
+    if (strlen($name) < 3) {
+        $errors['name'] = 'Name must be at least 3 characters.';
     }
-    if (strlen($password) < 6) $errors['password'] = 'Password must be at least 6 characters.';
-    if ($password !== $confirm_password) $errors['confirm_password'] = 'Passwords do not match.';
+    
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Please enter a valid email address.';
+    }
+    
+    if (strlen($password) < 6) {
+        $errors['password'] = 'Password must be at least 6 characters.';
+    }
+    
+    if ($password !== $confirm_password) {
+        $errors['confirm_password'] = 'Passwords do not match.';
+    }
 
     if (empty($errors)) {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        // Explicit Duplicate Email Check
+        $check_sql = "SELECT id FROM users WHERE email = ? LIMIT 1";
+        $check_stmt = mysqli_prepare($conn, $check_sql);
+        mysqli_stmt_bind_param($check_stmt, "s", $email);
+        mysqli_stmt_execute($check_stmt);
+        mysqli_stmt_store_result($check_stmt);
         
-        $sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
-        $stmt = mysqli_prepare($conn, $sql);
-        
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "ssss", $name, $email, $hashed_password, $role);
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_close($stmt);
-                header('Location: login.php?registered=1');
-                exit;
-            } else {
-                $errors['general'] = 'Email already exists or database error.';
-            }
-            mysqli_stmt_close($stmt);
+        if (mysqli_stmt_num_rows($check_stmt) > 0) {
+            $errors['email'] = 'Email already exists. Please login instead.';
+            mysqli_stmt_close($check_stmt);
         } else {
-            $errors['general'] = 'Something went wrong. Please try again.';
+            mysqli_stmt_close($check_stmt);
+            
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
+            $stmt = mysqli_prepare($conn, $sql);
+            
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "ssss", $name, $email, $hashed_password, $role);
+                if (mysqli_stmt_execute($stmt)) {
+                    mysqli_stmt_close($stmt);
+                    header('Location: login.php?registered=1');
+                    exit;
+                } else {
+                    $errors['general'] = 'Database error. Please try again.';
+                }
+                mysqli_stmt_close($stmt);
+            } else {
+                $errors['general'] = 'Something went wrong. Please try again.';
+            }
         }
     }
 }
@@ -59,10 +91,11 @@ include 'includes/header.php';
 
         <?php if (!empty($errors['general'])): ?>
             <div class="alert alert-danger"><?php echo htmlspecialchars($errors['general']); ?></div>
-        <?php
-endif; ?>
+        <?php endif; ?>
 
         <form method="POST" action="register.php" id="registerForm" novalidate>
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+            
             <div class="form-group">
                 <label for="name">Full Name</label>
                 <input type="text" id="name" name="name" class="form-control"
@@ -70,8 +103,8 @@ endif; ?>
                        placeholder="Enter your full name" required>
                 <?php if (!empty($errors['name'])): ?>
                     <small class="error-message"><?php echo htmlspecialchars($errors['name']); ?></small>
-                <?php
-endif; ?>
+                <?php endif; ?>
+                <small class="error-message" id="nameError"></small>
             </div>
 
             <div class="form-group">
@@ -81,15 +114,15 @@ endif; ?>
                        placeholder="Enter your email" required>
                 <?php if (!empty($errors['email'])): ?>
                     <small class="error-message"><?php echo htmlspecialchars($errors['email']); ?></small>
-                <?php
-endif; ?>
+                <?php endif; ?>
+                <small class="error-message" id="emailError"></small>
             </div>
 
             <div class="form-group">
                 <label for="role">Register As</label>
                 <select id="role" name="role" class="form-control" required>
-                    <option value="user">User (Buyer)</option>
-                    <option value="farmer">Farmer (Seller)</option>
+                    <option value="user" <?php echo $role === 'user' ? 'selected' : ''; ?>>User (Buyer)</option>
+                    <option value="farmer" <?php echo $role === 'farmer' ? 'selected' : ''; ?>>Farmer (Seller)</option>
                 </select>
             </div>
 
@@ -97,11 +130,11 @@ endif; ?>
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" class="form-control"
-                           placeholder="Min 6 chars" required>
+                           placeholder="Min 7 chars, A-Z, 123, &#33;" required>
                     <?php if (!empty($errors['password'])): ?>
                         <small class="error-message"><?php echo htmlspecialchars($errors['password']); ?></small>
-                    <?php
-endif; ?>
+                    <?php endif; ?>
+                    <small class="error-message" id="passwordError"></small>
                 </div>
 
                 <div class="form-group">
@@ -110,12 +143,12 @@ endif; ?>
                            placeholder="Re-enter" required>
                     <?php if (!empty($errors['confirm_password'])): ?>
                         <small class="error-message"><?php echo htmlspecialchars($errors['confirm_password']); ?></small>
-                    <?php
-endif; ?>
+                    <?php endif; ?>
+                    <small class="error-message" id="confirmPasswordError"></small>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            <button type="submit" class="btn btn-primary btn-block" id="registerSubmit">Create Account</button>
         </form>
 
         <p class="text-center mt-lg text-sm">

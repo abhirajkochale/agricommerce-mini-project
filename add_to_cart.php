@@ -1,10 +1,22 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require 'db.php';
+require 'auth_check.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF Validation
+    $token = $_POST['csrf_token'] ?? '';
+    if (!validate_csrf_token($token)) {
+        echo json_encode(['success' => false, 'message' => 'Security validation failed']);
+        exit;
+    }
 }
 
 $user_id = $_SESSION['user_id'];
@@ -24,7 +36,6 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
 if (mysqli_num_rows($result) > 0) {
-
     $row = mysqli_fetch_assoc($result);
     $new_quantity = $row['quantity'] + $quantity;
     $cart_id = $row['id'];
@@ -33,6 +44,7 @@ if (mysqli_num_rows($result) > 0) {
     $update_stmt = mysqli_prepare($conn, $update_query);
     mysqli_stmt_bind_param($update_stmt, "ii", $new_quantity, $cart_id);
     if (mysqli_stmt_execute($update_stmt)) {
+        mysqli_stmt_close($update_stmt);
         echo json_encode(['success' => true, 'message' => 'Cart quantity updated']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to update cart']);
@@ -42,9 +54,11 @@ if (mysqli_num_rows($result) > 0) {
     $insert_stmt = mysqli_prepare($conn, $insert_query);
     mysqli_stmt_bind_param($insert_stmt, "iii", $user_id, $product_id, $quantity);
     if (mysqli_stmt_execute($insert_stmt)) {
+        mysqli_stmt_close($insert_stmt);
         echo json_encode(['success' => true, 'message' => 'Added to cart successfully']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to add to cart']);
     }
 }
+mysqli_stmt_close($stmt);
 ?>

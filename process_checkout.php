@@ -1,14 +1,19 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require 'auth_check.php';
+require 'db.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user' || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+if ($_SESSION['role'] !== 'user' || $_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php');
     exit;
 }
 
-require 'db.php';
+// CSRF Validation
+$token = $_POST['csrf_token'] ?? '';
+if (!validate_csrf_token($token)) {
+    log_system_error("CSRF Failure in process_checkout.php");
+    die("Security validation failed.");
+}
+
 $user_id = $_SESSION['user_id'];
 
 // Get Cart Items
@@ -79,7 +84,7 @@ try {
 
 } catch (Exception $e) {
     mysqli_rollback($conn);
-    // Silent fail for demo, redirect to cart with error (could be improved)
+    log_system_error("Checkout Failed: " . $e->getMessage());
     header("Location: cart.php?error=checkout_failed");
     exit;
 }

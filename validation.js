@@ -1,132 +1,199 @@
-// validation.js - client-side checkout form validation
+/**
+ * AgroConnect - Unified Client-side Validation
+ * Handles Checkout, Login, Registration, and Feedback
+ */
 
 window.addEventListener("DOMContentLoaded", function () {
-  var form = document.getElementById("checkoutForm");
-  if (!form) return;
+    
+    // --- Utility Functions ---
+    function showError(input, message) {
+        input.classList.add("error");
+        input.classList.remove("success");
+        let errorElement = input.parentNode.querySelector('.error-message');
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        return false;
+    }
 
-  var inputs = {
-    fullName: form.querySelector('input[name="full_name"]'),
-    address: form.querySelector('textarea[name="address"]'),
-    cardName: form.querySelector('input[name="card_name"]'),
-    cardNumber: form.querySelector('input[name="card_number"]'),
-    expiry: form.querySelector('input[name="expiry"]'),
-    cvv: form.querySelector('input[name="cvv"]')
-  };
+    function showSuccess(input) {
+        input.classList.remove("error");
+        input.classList.add("success");
+        let errorElement = input.parentNode.querySelector('.error-message');
+        if (errorElement) {
+            errorElement.textContent = "";
+            errorElement.style.display = 'none';
+        }
+        return true;
+    }
 
-  // Create error elements dynamically if they don't exist
-  Object.values(inputs).forEach(function(input) {
-      if (input && !input.nextElementSibling?.classList.contains('error-message')) {
-          var err = document.createElement("small");
-          err.className = "error-message";
-          err.style.color = "var(--danger-color)";
-          err.style.display = "block";
-          err.style.marginTop = "4px";
-          input.parentNode.insertBefore(err, input.nextSibling);
-      }
-  });
+    function setBtnLoading(btn, text) {
+        if (!btn) return;
+        const originalText = btn.innerHTML;
+        btn.setAttribute('data-original-text', originalText);
+        btn.disabled = true;
+        btn.style.opacity = "0.7";
+        btn.innerHTML = `<span class="spinner"></span> ${text}`;
+    }
 
-  function showError(input, message) {
-      input.classList.add("error");
-      input.classList.remove("success");
-      input.nextElementSibling.textContent = message;
-      return false;
-  }
+    // --- 1. Checkout Form Validation ---
+    const checkoutForm = document.getElementById("checkoutForm");
+    if (checkoutForm) {
+        const checkoutInputs = {
+            fullName: checkoutForm.querySelector('input[name="full_name"]'),
+            address: checkoutForm.querySelector('textarea[name="address"]'),
+            cardNumber: checkoutForm.querySelector('input[name="card_number"]'),
+            expiry: checkoutForm.querySelector('input[name="expiry"]'),
+            cvv: checkoutForm.querySelector('input[name="cvv"]')
+        };
 
-  function showSuccess(input) {
-      input.classList.remove("error");
-      input.classList.add("success");
-      input.nextElementSibling.textContent = "";
-      return true;
-  }
+        checkoutForm.addEventListener("submit", function (e) {
+            let isValid = true;
 
-  function validate() {
-      var isValid = true;
+            // Name Validation
+            if (checkoutInputs.fullName.value.trim().length < 3) {
+                showError(checkoutInputs.fullName, "Name must be at least 3 characters.");
+                isValid = false;
+            } else showSuccess(checkoutInputs.fullName);
 
-      // Full Name
-      if (inputs.fullName.value.trim().length < 3) {
-          showError(inputs.fullName, "Name must be at least 3 characters.");
-          isValid = false;
-      } else {
-          showSuccess(inputs.fullName);
-      }
+            // Address Validation
+            if (checkoutInputs.address.value.trim().length < 10) {
+                showError(checkoutInputs.address, "Please enter a complete delivery address.");
+                isValid = false;
+            } else showSuccess(checkoutInputs.address);
 
-      // Address
-      if (inputs.address.value.trim().length < 10) {
-          showError(inputs.address, "Please enter a complete delivery address.");
-          isValid = false;
-      } else {
-          showSuccess(inputs.address);
-      }
+            // Card Number Validation (16 digits)
+            const cleanCard = checkoutInputs.cardNumber.value.replace(/\D/g, '');
+            if (cleanCard.length !== 16) {
+                showError(checkoutInputs.cardNumber, "Card number must be 16 digits.");
+                isValid = false;
+            } else showSuccess(checkoutInputs.cardNumber);
 
-      // Card Name
-      if (inputs.cardName.value.trim().length < 3) {
-          showError(inputs.cardName, "Name on card is required.");
-          isValid = false;
-      } else {
-          showSuccess(inputs.cardName);
-      }
+            // Expiry Validation (MM/YY)
+            const expiryRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
+            if (!expiryRegex.test(checkoutInputs.expiry.value)) {
+                showError(checkoutInputs.expiry, "Use MM/YY format (e.g. 12/25).");
+                isValid = false;
+            } else {
+                // Future date check (simple version)
+                const parts = checkoutInputs.expiry.value.split('/');
+                const month = parseInt(parts[0], 10);
+                const year = parseInt("20" + parts[1], 10);
+                const now = new Date();
+                const expDate = new Date(year, month - 1, 1);
+                
+                if (expDate < new Date(now.getFullYear(), now.getMonth(), 1)) {
+                    showError(checkoutInputs.expiry, "Card has expired.");
+                    isValid = false;
+                } else showSuccess(checkoutInputs.expiry);
+            }
 
-      // Card Number
-      var cardVal = inputs.cardNumber.value.replace(/\D/g, '');
-      if (cardVal.length !== 16) {
-          showError(inputs.cardNumber, "Card number must be 16 digits.");
-          isValid = false;
-      } else {
-          showSuccess(inputs.cardNumber);
-      }
+            // CVV Validation (3-4 digits)
+            const cleanCVV = checkoutInputs.cvv.value.replace(/\D/g, '');
+            if (cleanCVV.length < 3 || cleanCVV.length > 4) {
+                showError(checkoutInputs.cvv, "CVV must be 3 or 4 digits.");
+                isValid = false;
+            } else showSuccess(checkoutInputs.cvv);
 
-      // Expiry
-      var expMatch = inputs.expiry.value.match(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/);
-      if (!expMatch) {
-          showError(inputs.expiry, "Invalid expiry format (MM/YY).");
-          isValid = false;
-      } else {
-          showSuccess(inputs.expiry);
-      }
+            if (!isValid) {
+                e.preventDefault();
+            } else {
+                setBtnLoading(checkoutForm.querySelector('button[type="submit"]'), "Processing Payment...");
+            }
+        });
 
-      // CVV
-      var cvvVal = inputs.cvv.value.replace(/\D/g, '');
-      if (cvvVal.length < 3 || cvvVal.length > 4) {
-          showError(inputs.cvv, "CVV must be 3 or 4 numbers.");
-          isValid = false;
-      } else {
-          showSuccess(inputs.cvv);
-      }
+        // Dynamic formatting for Card Number
+        if (checkoutInputs.cardNumber) {
+            checkoutInputs.cardNumber.addEventListener("input", (e) => {
+                let v = e.target.value.replace(/\D/g, '').match(/.{1,4}/g);
+                e.target.value = v ? v.join('-') : '';
+            });
+        }
 
-      return isValid;
-  }
-
-  // Format Card Number automatically
-  inputs.cardNumber.addEventListener("input", function(e) {
-      var v = e.target.value.replace(/\D/g, '');
-      var formatted = v.match(/.{1,4}/g);
-      if (formatted) {
-          e.target.value = formatted.join('-');
-      }
-  });
-
-  // Format Expiry automatically
-  inputs.expiry.addEventListener("input", function(e) {
-      var v = e.target.value.replace(/\D/g, '');
-      if (v.length >= 2) {
-          e.target.value = v.substring(0,2) + '/' + v.substring(2,4);
-      } else {
-          e.target.value = v;
-      }
-  });
-
-  form.addEventListener("submit", function (e) {
-    if (!validate()) {
-        e.preventDefault();
-    } else {
-        // Change button text to show processing
-        var btn = form.querySelector('button[type="submit"]');
-        if (btn) {
-            btn.textContent = "Processing Payment...";
-            btn.style.opacity = "0.7";
-            // Disable button slightly after form submit to prevent double-click
-            setTimeout(() => btn.disabled = true, 50);
+        // Dynamic formatting for Expiry
+        if (checkoutInputs.expiry) {
+            checkoutInputs.expiry.addEventListener("input", (e) => {
+                let v = e.target.value.replace(/\D/g, '');
+                if (v.length >= 2) {
+                    e.target.value = v.substring(0, 2) + '/' + v.substring(2, 4);
+                }
+            });
         }
     }
-  });
+
+    // --- 2. Login Form Validation ---
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", function (e) {
+            setBtnLoading(loginForm.querySelector('button[type="submit"]'), "Verifying...");
+        });
+    }
+
+    // --- 3. Registration Form Validation ---
+    const registerForm = document.getElementById("registerForm");
+    if (registerForm) {
+        const regInputs = {
+            name: registerForm.querySelector('#name'),
+            email: registerForm.querySelector('#email'),
+            password: registerForm.querySelector('#password'),
+            confirm: registerForm.querySelector('#confirm_password')
+        };
+
+        registerForm.addEventListener("submit", function (e) {
+            let isValid = true;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (regInputs.name.value.trim().length < 3) {
+                showError(regInputs.name, "Name must be at least 3 characters.");
+                isValid = false;
+            } else showSuccess(regInputs.name);
+
+            if (!emailRegex.test(regInputs.email.value.trim())) {
+                showError(regInputs.email, "Invalid email format.");
+                isValid = false;
+            } else showSuccess(regInputs.email);
+
+            const password = regInputs.password.value;
+            const hasCapital = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+            if (password.length < 7) {
+                showError(regInputs.password, "Minimum 7 characters required.");
+                isValid = false;
+            } else if (!hasCapital || !hasNumber || !hasSpecial) {
+                showError(regInputs.password, "Include a capital letter, number, and special character.");
+                isValid = false;
+            } else {
+                showSuccess(regInputs.password);
+            }
+
+            if (regInputs.password.value !== regInputs.confirm.value) {
+                showError(regInputs.confirm, "Passwords do not match.");
+                isValid = false;
+            } else showSuccess(regInputs.confirm);
+
+            if (!isValid) {
+                e.preventDefault();
+            } else {
+                setBtnLoading(registerForm.querySelector('button[type="submit"]'), "Creating Account...");
+            }
+        });
+    }
+
+    // --- 4. Feedback Form Handling ---
+    const staticFeedbackForm = document.getElementById("staticFeedbackForm");
+    if (staticFeedbackForm) {
+        staticFeedbackForm.addEventListener("submit", function (e) {
+            setBtnLoading(staticFeedbackForm.querySelector('#staticFeedbackSubmit'), "Submitting...");
+        });
+    }
+
+    const modalFeedbackForm = document.getElementById("modalFeedbackForm");
+    if (modalFeedbackForm) {
+        modalFeedbackForm.addEventListener("submit", function (e) {
+            setBtnLoading(modalFeedbackForm.querySelector('#modalFeedbackSubmit'), "Sending...");
+        });
+    }
 });

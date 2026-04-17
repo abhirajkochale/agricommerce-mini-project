@@ -5,8 +5,22 @@ if (session_status() === PHP_SESSION_NONE) {
 require 'db.php';
 check_tables_exist($conn);
 
+// CSRF Token generation for login form
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $errors = [];
 $email = '';
+
+// Feedback for unauthorized or timeout
+if (isset($_GET['error'])) {
+    if ($_GET['error'] === 'unauthorized') {
+        $errors['general'] = 'Please log in to access that page.';
+    } elseif ($_GET['error'] === 'timeout') {
+        $errors['general'] = 'Your session has expired. Please log in again.';
+    }
+}
 
 // Auto-fill logic from cookie
 if (isset($_COOKIE['user_email'])) {
@@ -16,6 +30,12 @@ if (isset($_COOKIE['user_email'])) {
 $registered = isset($_GET['registered']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF Validation
+    $user_token = $_POST['csrf_token'] ?? '';
+    if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $user_token)) {
+        die("CSRF token validation failed.");
+    }
+
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $remember = isset($_POST['remember']);
@@ -42,13 +62,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($result && mysqli_num_rows($result) > 0) {
                 $user = mysqli_fetch_assoc($result);
                 if (password_verify($password, $user['password'])) {
+                    // Session Fixation Protection
+                    session_regenerate_id(true);
+                    
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['user_name'] = $user['name'];
                     $_SESSION['role'] = $user['role'];
+                    $_SESSION['last_activity'] = time();
 
                     // Cookie: Remember Me (7 days)
                     if ($remember) {
-                        setcookie("user_email", $email, time() + (86400 * 7), "/");
+                        setcookie("user_email", $email, time() + (86400 * 7), "/", "", false, true); // Added Secure & HttpOnly flags
                     } else {
                         if (isset($_COOKIE['user_email'])) {
                             setcookie("user_email", "", time() - 3600, "/");
@@ -87,15 +111,15 @@ include 'includes/header.php';
 
         <?php if ($registered): ?>
             <div class="alert alert-success">Registration successful! Please log in.</div>
-        <?php
-endif; ?>
+        <?php endif; ?>
 
         <?php if (!empty($errors['general'])): ?>
             <div class="alert alert-danger"><?php echo htmlspecialchars($errors['general']); ?></div>
-        <?php
-endif; ?>
+        <?php endif; ?>
 
         <form method="POST" action="login.php" id="loginForm" novalidate>
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+            
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <input type="email" id="email" name="email" class="form-control"
@@ -103,8 +127,7 @@ endif; ?>
                        placeholder="Enter your email" required>
                 <?php if (!empty($errors['email'])): ?>
                     <small class="error-message"><?php echo htmlspecialchars($errors['email']); ?></small>
-                <?php
-endif; ?>
+                <?php endif; ?>
                 <small class="error-message" id="emailError"></small>
             </div>
 
@@ -114,8 +137,7 @@ endif; ?>
                        placeholder="Enter your password" required>
                 <?php if (!empty($errors['password'])): ?>
                     <small class="error-message"><?php echo htmlspecialchars($errors['password']); ?></small>
-                <?php
-endif; ?>
+                <?php endif; ?>
                 <small class="error-message" id="passwordError"></small>
             </div>
 
@@ -125,7 +147,7 @@ endif; ?>
                 <label for="remember" style="margin-bottom: 0;">Remember Me</label>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
+            <button type="submit" class="btn btn-primary btn-block" id="loginSubmit">Login</button>
         </form>
 
         <p class="text-center mt-lg text-sm">

@@ -20,7 +20,9 @@ $activePage = basename($_SERVER['PHP_SELF'], ".php");
             <a href="index.php" class="logo">AgroConnect</a>
         </div>
         <nav class="main-nav">
-            <a href="index.php" class="<?php echo($activePage == 'index') ? 'active' : ''; ?>">Home</a>
+            <?php if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin'): ?>
+                <a href="index.php" class="<?php echo($activePage == 'index') ? 'active' : ''; ?>">Home</a>
+            <?php endif; ?>
             
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php if ($_SESSION['role'] === 'admin'): ?>
