@@ -30,7 +30,7 @@ if ($type === 'user' && $role === 'admin') {
     mysqli_begin_transaction($conn);
     try {
         // Delete user's listings first to avoid FK issues
-        $s1 = mysqli_prepare($conn, "DELETE FROM orders WHERE user_id=?");
+        $s1 = mysqli_prepare($conn, "DELETE FROM crops WHERE user_id=?");
         mysqli_stmt_bind_param($s1, "i", $id);
         mysqli_stmt_execute($s1);
         
@@ -51,12 +51,12 @@ if ($type === 'user' && $role === 'admin') {
 
 // Handle order/listing deletion
 if ($role === 'admin') {
-    $sql = "DELETE FROM orders WHERE id=?";
+    $sql = "DELETE FROM crops WHERE id=?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "i", $id);
 } else {
     // Basic owner check
-    $sql = "DELETE FROM orders WHERE id=? AND user_id=?";
+    $sql = "DELETE FROM crops WHERE id=? AND user_id=?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "ii", $id, $user_id);
 }

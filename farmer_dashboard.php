@@ -16,7 +16,7 @@ include 'includes/header.php';
 
 $user_id = $_SESSION['user_id'];
 // Table structure check is handled centrally, but we can ensure column exists if needed
-// mysqli_query($conn, "ALTER TABLE orders ADD COLUMN IF NOT EXISTS user_id INT");
+// mysqli_query($conn, "ALTER TABLE crops ADD COLUMN IF NOT EXISTS user_id INT");
 ?>
 
 <div class="container">
@@ -84,7 +84,7 @@ $user_id = $_SESSION['user_id'];
         <div class="card-grid">
             <?php
             // Secure query with user_id
-            $stmt = mysqli_prepare($conn, "SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC");
+            $stmt = mysqli_prepare($conn, "SELECT * FROM crops WHERE user_id = ? ORDER BY id DESC");
             mysqli_stmt_bind_param($stmt, "i", $user_id);
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
@@ -152,7 +152,7 @@ $user_id = $_SESSION['user_id'];
                                    o.crop_name, u.name as customer_name 
                             FROM order_items oi 
                             JOIN checkout_orders co ON oi.order_id = co.id 
-                            JOIN orders o ON oi.product_id = o.id 
+                            JOIN crops o ON oi.product_id = o.id 
                             JOIN users u ON co.user_id = u.id 
                             WHERE oi.farmer_id = ? 
                             ORDER BY co.created_at DESC";

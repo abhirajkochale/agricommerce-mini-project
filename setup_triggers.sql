@@ -8,7 +8,7 @@ FOR EACH ROW
 BEGIN
     -- Check if the status is being changed TO 'Cancelled' from any other state
     IF NEW.status = 'Cancelled' AND OLD.status != 'Cancelled' THEN
-        UPDATE orders 
+        UPDATE crops 
         SET quantity = quantity + NEW.quantity 
         WHERE id = NEW.product_id;
     END IF;
@@ -16,7 +16,7 @@ BEGIN
     -- Optional: If status is changed BACK to 'Pending' from 'Cancelled' (un-cancelling)
     -- This ensures stock is reserved again.
     IF NEW.status != 'Cancelled' AND OLD.status = 'Cancelled' THEN
-        UPDATE orders 
+        UPDATE crops 
         SET quantity = quantity - NEW.quantity 
         WHERE id = NEW.product_id;
     END IF;

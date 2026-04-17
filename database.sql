@@ -25,9 +25,9 @@ CREATE TABLE IF NOT EXISTS users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================
--- 3. TABLE: orders   (crop listings posted by farmers)
+-- 3. TABLE: crops   (crop listings posted by farmers)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS orders (
+CREATE TABLE IF NOT EXISTS crops (
     id           INT            AUTO_INCREMENT PRIMARY KEY,
     farmer_name  VARCHAR(100)   NOT NULL,
     email        VARCHAR(100)   NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS cart (
     quantity   INT       DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id)    REFERENCES users(id)  ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES orders(id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES crops(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================
@@ -76,13 +76,13 @@ CREATE TABLE IF NOT EXISTS order_items (
     id         INT            AUTO_INCREMENT PRIMARY KEY,
     order_id   INT            NOT NULL,               -- FK → checkout_orders.id
     farmer_id  INT            NOT NULL,               -- FK → users.id  (the seller)
-    product_id INT            NOT NULL,               -- FK → orders.id (the listing)
+    product_id INT            NOT NULL,               -- FK → crops.id (the listing)
     quantity   INT            NOT NULL,
     price      DECIMAL(10,2)  NOT NULL,               -- price per kg at time of purchase
     status     VARCHAR(50)    NOT NULL DEFAULT 'Pending', -- 'Pending' | 'Shipped' | 'Delivered'
     FOREIGN KEY (order_id)   REFERENCES checkout_orders(id) ON DELETE CASCADE,
     FOREIGN KEY (farmer_id)  REFERENCES users(id)          ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES orders(id)         ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES crops(id)         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

@@ -25,7 +25,7 @@ if (isset($_GET['remove']) && isset($_GET['csrf_token'])) {
 
 $query = "SELECT c.id as cart_id, c.quantity, o.id as product_id, o.crop_name, o.price, o.category, u.name as farmer_name 
           FROM cart c 
-          JOIN orders o ON c.product_id = o.id 
+          JOIN crops o ON c.product_id = o.id 
           JOIN users u ON o.user_id = u.id 
           WHERE c.user_id = ?";
 $stmt = mysqli_prepare($conn, $query);

@@ -34,7 +34,7 @@ $error = $_GET['error'] ?? '';
         <p class="text-muted mb-lg">Browse fresh produce listed by verified farmers.</p>
         
         <?php
-        $cat_query = "SELECT DISTINCT category FROM orders WHERE category IS NOT NULL AND category != ''";
+        $cat_query = "SELECT DISTINCT category FROM crops WHERE category IS NOT NULL AND category != ''";
         $cat_stmt = mysqli_prepare($conn, $cat_query);
         $categories = [];
         if ($cat_stmt) {
@@ -67,7 +67,7 @@ $error = $_GET['error'] ?? '';
         <div id="productGrid" class="card-grid">
             <?php
             // Fetch products from database
-            $sql = "SELECT o.*, u.name as farmer_name FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.id DESC";
+            $sql = "SELECT o.*, u.name as farmer_name FROM crops o JOIN users u ON o.user_id = u.id ORDER BY o.id DESC";
             $p_stmt = mysqli_prepare($conn, $sql);
             
             if ($p_stmt) {

@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $sql = "INSERT INTO orders (farmer_name, email, crop_name, category, quantity, price, location, user_id) 
+    $sql = "INSERT INTO crops (farmer_name, email, crop_name, category, quantity, price, location, user_id) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     
     $stmt = mysqli_prepare($conn, $sql);

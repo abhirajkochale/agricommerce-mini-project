@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } elseif ($user['role'] === 'farmer') {
                         header('Location: farmer_dashboard.php');
                     } else {
-                        header('Location: user_dashboard.php');
+                        header('Location: index.php');
                     }
                     exit;
                 } else {

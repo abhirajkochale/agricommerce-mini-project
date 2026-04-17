@@ -25,11 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Only owner or admin can update
     if ($role === 'admin') {
-        $sql = "UPDATE orders SET crop_name=?, quantity=?, price=?, location=? WHERE id=?";
+        $sql = "UPDATE crops SET crop_name=?, quantity=?, price=?, location=? WHERE id=?";
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, "sidis", $crop, $quantity, $price, $location, $id);
     } else {
-        $sql = "UPDATE orders SET crop_name=?, quantity=?, price=?, location=? WHERE id=? AND user_id=?";
+        $sql = "UPDATE crops SET crop_name=?, quantity=?, price=?, location=? WHERE id=? AND user_id=?";
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, "sidisi", $crop, $quantity, $price, $location, $id, $user_id);
     }

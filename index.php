@@ -21,7 +21,7 @@ include 'includes/header.php';
 $stats = ['listings' => 0, 'orders' => 0, 'revenue' => 0];
 if ($role === 'farmer') {
     // 1. Active Listings
-    $stmt1 = mysqli_prepare($conn, "SELECT COUNT(*) FROM orders WHERE user_id = ?");
+    $stmt1 = mysqli_prepare($conn, "SELECT COUNT(*) FROM crops WHERE user_id = ?");
     mysqli_stmt_bind_param($stmt1, "i", $user_id);
     mysqli_stmt_execute($stmt1);
     mysqli_stmt_bind_result($stmt1, $stats['listings']);

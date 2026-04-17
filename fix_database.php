@@ -66,8 +66,8 @@ if (mysqli_query($conn, $sql_users)) {
     echo "❌ Failed 'users': " . mysqli_error($conn) . "\n";
 }
 
-// ORDERS (crop listings)
-$sql_orders = "CREATE TABLE orders (
+// CROPS (crop listings)
+$sql_crops = "CREATE TABLE crops (
     id           INT            AUTO_INCREMENT PRIMARY KEY,
     farmer_name  VARCHAR(100)   NOT NULL,
     email        VARCHAR(100)   NOT NULL,
@@ -81,10 +81,10 @@ $sql_orders = "CREATE TABLE orders (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-if (mysqli_query($conn, $sql_orders)) {
-    echo "✅ Table 'orders' created.\n";
+if (mysqli_query($conn, $sql_crops)) {
+    echo "✅ Table 'crops' created.\n";
 } else {
-    echo "❌ Failed 'orders': " . mysqli_error($conn) . "\n";
+    echo "❌ Failed 'crops': " . mysqli_error($conn) . "\n";
 }
 
 // CART
@@ -95,7 +95,7 @@ $sql_cart = "CREATE TABLE cart (
     quantity   INT       DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id)    REFERENCES users(id)  ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES orders(id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES crops(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 if (mysqli_query($conn, $sql_cart)) {
@@ -131,7 +131,7 @@ $sql_items = "CREATE TABLE order_items (
     status     VARCHAR(50)    NOT NULL DEFAULT 'Pending',
     FOREIGN KEY (order_id)   REFERENCES checkout_orders(id) ON DELETE CASCADE,
     FOREIGN KEY (farmer_id)  REFERENCES users(id)           ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES orders(id)          ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES crops(id)          ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
 if (mysqli_query($conn, $sql_items)) {
@@ -170,7 +170,7 @@ $crops = [
 ];
 
 echo "\n--- Seeding sample crop listings ---\n\n";
-$stmt = mysqli_prepare($conn, "INSERT INTO orders (farmer_name, email, crop_name, category, quantity, price, location, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt = mysqli_prepare($conn, "INSERT INTO crops (farmer_name, email, crop_name, category, quantity, price, location, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 foreach ($crops as $c) {
     mysqli_stmt_bind_param($stmt, "ssssiids", $c[0], $c[1], $c[2], $c[3], $c[4], $c[5], $c[6], $farmer_id);
     if (mysqli_stmt_execute($stmt)) {

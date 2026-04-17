@@ -12,11 +12,11 @@ $user_id = $_SESSION['user_id'];
 $role = $_SESSION['role'];
 
 if ($role === 'admin') {
-    $sql = "SELECT * FROM orders WHERE id=?";
+    $sql = "SELECT * FROM crops WHERE id=?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "i", $id);
 } else {
-    $sql = "SELECT * FROM orders WHERE id=? AND user_id=?";
+    $sql = "SELECT * FROM crops WHERE id=? AND user_id=?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "ii", $id, $user_id);
 }

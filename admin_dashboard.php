@@ -17,7 +17,7 @@ include 'includes/header.php';
 
 // Fetch stats using direct count for efficiency in dashboard view
 $userCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM users"))['c'];
-$cropCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM orders"))['c'];
+$cropCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM crops"))['c'];
 $farmerCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM users WHERE role='farmer'"))['c'];
 
 $success = $_GET['success'] ?? '';
@@ -107,7 +107,7 @@ $error = $_GET['error'] ?? '';
                 <tbody>
                     <?php
                     $crops = mysqli_query($conn, "SELECT o.id, o.crop_name, o.price, u.name as farmer_name 
-                                                 FROM orders o JOIN users u ON o.user_id = u.id");
+                                                 FROM crops o JOIN users u ON o.user_id = u.id");
                     while ($c = mysqli_fetch_assoc($crops)):
                         ?>
                         <tr>

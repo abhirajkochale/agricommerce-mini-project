@@ -19,7 +19,7 @@ $user_id = $_SESSION['user_id'];
 // Get Cart Items
 $cart_query = "SELECT c.quantity, o.id as product_id, o.price, o.user_id as farmer_id 
                FROM cart c 
-               JOIN orders o ON c.product_id = o.id 
+               JOIN crops o ON c.product_id = o.id 
                WHERE c.user_id = ?";
 $stmt = mysqli_prepare($conn, $cart_query);
 mysqli_stmt_bind_param($stmt, "i", $user_id);
@@ -63,7 +63,7 @@ try {
         mysqli_stmt_execute($item_stmt);
         
         // Update product stock (quantity)
-        $stock_upd = "UPDATE orders SET quantity = quantity - ? WHERE id = ? AND quantity >= ?";
+        $stock_upd = "UPDATE crops SET quantity = quantity - ? WHERE id = ? AND quantity >= ?";
         $stock_stmt = mysqli_prepare($conn, $stock_upd);
         mysqli_stmt_bind_param($stock_stmt, "iii", $item['quantity'], $item['product_id'], $item['quantity']);
         mysqli_stmt_execute($stock_stmt);
