@@ -38,7 +38,7 @@ if (!$conn) {
  * Call this at the top of any page that queries the DB.
  */
 function check_tables_exist($conn) {
-    $required = ['users', 'orders', 'cart', 'checkout_orders', 'order_items'];
+    $required = ['users', 'crops', 'cart', 'checkout_orders', 'order_items'];
     $missing  = [];
     foreach ($required as $table) {
         $result = @mysqli_query($conn, "SELECT 1 FROM `$table` LIMIT 1");
