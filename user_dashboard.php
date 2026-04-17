@@ -1,6 +1,11 @@
 <?php
 require 'auth_check.php';
 require 'db.php';
+
+if ($_SESSION['role'] !== 'user') {
+    header('Location: login.php?error=unauthorized');
+    exit;
+}
 check_tables_exist($conn);
 
 $pageTitle = "Buyer Marketplace";

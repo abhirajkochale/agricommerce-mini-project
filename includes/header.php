@@ -52,8 +52,10 @@ endif; ?>
             <button id="themeToggle" class="theme-toggle" title="Toggle Dark/Light Mode">
                 <span class="icon">🌙</span>
             </button>
+            <?php if (!isset($_SESSION['role']) || $_SESSION['role'] === 'user'): ?>
             <a href="cart.php" class="cart-info" title="View Cart" style="text-decoration:none; color:inherit;">
                 🛒 <span id="cartCount">0</span>
             </a>
+            <?php endif; ?>
         </div>
     </header>

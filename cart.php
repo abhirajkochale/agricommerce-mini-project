@@ -2,6 +2,11 @@
 require 'auth_check.php';
 require 'db.php';
 
+if ($_SESSION['role'] !== 'user') {
+    header('Location: login.php?error=unauthorized');
+    exit;
+}
+
 $pageTitle = "My Cart";
 include 'includes/header.php';
 

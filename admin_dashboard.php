@@ -14,7 +14,6 @@ require 'auth_check.php'; // Ensure CSRF functions are loaded
 
 $pageTitle = "Admin Control Panel";
 include 'includes/header.php';
-
 // Fetch stats using direct count for efficiency in dashboard view
 $userCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM users"))['c'];
 $cropCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM crops"))['c'];
@@ -23,7 +22,6 @@ $farmerCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as c FROM
 $success = $_GET['success'] ?? '';
 $error = $_GET['error'] ?? '';
 ?>
-
 <div class="container">
     <h1>Admin Dashboard</h1>
 

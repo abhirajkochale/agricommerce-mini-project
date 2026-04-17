@@ -14,7 +14,7 @@ if (!validate_csrf_token($token)) {
     die("Security validation failed.");
 }
 
-$id = (int)$_GET['id'];
+$id = (int) $_GET['id'];
 $user_id = $_SESSION['user_id'];
 $role = $_SESSION['role'];
 $type = $_GET['type'] ?? 'order';
@@ -25,7 +25,6 @@ if ($type === 'user' && $role === 'admin') {
         header("Location: admin_dashboard.php?error=self_delete");
         exit;
     }
-    
     // Use transaction for atomic deletion
     mysqli_begin_transaction($conn);
     try {
@@ -33,12 +32,12 @@ if ($type === 'user' && $role === 'admin') {
         $s1 = mysqli_prepare($conn, "DELETE FROM crops WHERE user_id=?");
         mysqli_stmt_bind_param($s1, "i", $id);
         mysqli_stmt_execute($s1);
-        
+
         // Delete user
         $s2 = mysqli_prepare($conn, "DELETE FROM users WHERE id=?");
         mysqli_stmt_bind_param($s2, "i", $id);
         mysqli_stmt_execute($s2);
-        
+
         mysqli_commit($conn);
         header("Location: admin_dashboard.php?success=user_deleted");
     } catch (Exception $e) {

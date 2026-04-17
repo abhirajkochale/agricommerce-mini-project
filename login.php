@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $sql = "SELECT id, name, password, role FROM users WHERE email = ? LIMIT 1";
         $stmt = mysqli_prepare($conn, $sql);
-        
+
         if ($stmt) {
             mysqli_stmt_bind_param($stmt, "s", $email);
             mysqli_stmt_execute($stmt);
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (password_verify($password, $user['password'])) {
                     // Session Fixation Protection
                     session_regenerate_id(true);
-                    
+
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['user_name'] = $user['name'];
                     $_SESSION['role'] = $user['role'];
@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } elseif ($user['role'] === 'farmer') {
                         header('Location: farmer_dashboard.php');
                     } else {
-                        header('Location: index.php');
+                        header('Location: user_dashboard.php');
                     }
                     exit;
                 } else {
@@ -119,12 +119,11 @@ include 'includes/header.php';
 
         <form method="POST" action="login.php" id="loginForm" novalidate>
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-            
+
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <input type="email" id="email" name="email" class="form-control"
-                       value="<?php echo htmlspecialchars($email); ?>"
-                       placeholder="Enter your email" required>
+                    value="<?php echo htmlspecialchars($email); ?>" placeholder="Enter your email" required>
                 <?php if (!empty($errors['email'])): ?>
                     <small class="error-message"><?php echo htmlspecialchars($errors['email']); ?></small>
                 <?php endif; ?>
@@ -134,7 +133,7 @@ include 'includes/header.php';
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" class="form-control"
-                       placeholder="Enter your password" required>
+                    placeholder="Enter your password" required>
                 <?php if (!empty($errors['password'])): ?>
                     <small class="error-message"><?php echo htmlspecialchars($errors['password']); ?></small>
                 <?php endif; ?>
@@ -142,8 +141,7 @@ include 'includes/header.php';
             </div>
 
             <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" id="remember" name="remember" 
-                       <?php echo isset($_COOKIE['user_email']) ? 'checked' : ''; ?>>
+                <input type="checkbox" id="remember" name="remember" <?php echo isset($_COOKIE['user_email']) ? 'checked' : ''; ?>>
                 <label for="remember" style="margin-bottom: 0;">Remember Me</label>
             </div>
 
@@ -153,8 +151,9 @@ include 'includes/header.php';
         <p class="text-center mt-lg text-sm">
             Don't have an account? <a href="register.php" class="font-w-600">Register here</a>
         </p>
-        
-        <div class="mt-lg p-4 text-center" style="background: #f8f9fa; border-radius: var(--radius-sm); border: 1px dashed #ccc;">
+
+        <div class="mt-lg p-4 text-center"
+            style="background: #f8f9fa; border-radius: var(--radius-sm); border: 1px dashed #ccc;">
             <p class="text-sm text-muted mb-sm"><strong>Demo Admin Access</strong></p>
             <p class="text-sm">Email: <strong>admin@agro.com</strong><br>Password: <strong>admin123</strong></p>
         </div>
