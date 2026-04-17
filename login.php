@@ -3,6 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require 'db.php';
+check_tables_exist($conn);
 
 $errors = [];
 $email = '';

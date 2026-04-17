@@ -51,7 +51,6 @@ a {
     text-decoration: none;
     transition: var(--transition);
 }
-
 a:hover {
     color: var(--primary-dark);
 }

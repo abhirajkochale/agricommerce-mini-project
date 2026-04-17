@@ -10,7 +10,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'farmer' || $_SERVER['
 
 require 'db.php';
 $user_id = $_SESSION['user_id'];
-
 if (isset($_POST['statuses']) && is_array($_POST['statuses'])) {
     $update_query = "UPDATE order_items SET status = ? WHERE id = ? AND farmer_id = ?";
     $stmt = mysqli_prepare($conn, $update_query);

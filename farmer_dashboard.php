@@ -3,7 +3,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Security: Check if logged in and is farmer
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'farmer') {
     header('Location: login.php');
     exit;
@@ -14,8 +13,6 @@ $pageTitle = "Farmer Dashboard";
 include 'includes/header.php';
 
 $user_id = $_SESSION['user_id'];
-
-// Add user_id column to orders if it doesn't exist
 mysqli_query($conn, "ALTER TABLE orders ADD COLUMN IF NOT EXISTS user_id INT");
 ?>
 

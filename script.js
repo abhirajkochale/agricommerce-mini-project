@@ -61,7 +61,7 @@ function initProductsPage() {
     var cards = Array.from(grid.getElementsByClassName("product-card"));
 
     // Filter
-    cards.forEach(function(c) {
+    cards.forEach(function (c) {
       // name and category are stored in data attributes in the HTML
       var name = c.dataset.name.toLowerCase();
       var category = c.dataset.category;
@@ -70,27 +70,27 @@ function initProductsPage() {
       var matchesCategory = selectedCategory === "all" || category === selectedCategory;
 
       if (matchesSearch && matchesCategory) {
-          c.style.display = "block";
+        c.style.display = "block";
       } else {
-          c.style.display = "none";
+        c.style.display = "none";
       }
     });
 
     // Sort visible cards
     var visibleCards = cards.filter(c => c.style.display !== "none");
     if (sortValue !== "default") {
-        visibleCards.sort(function(a, b) {
-            if (sortValue === "price_asc" || sortValue === "price_desc") {
-                var pA = parseFloat(a.dataset.price);
-                var pB = parseFloat(b.dataset.price);
-                return sortValue === "price_asc" ? pA - pB : pB - pA;
-            } else if (sortValue === "name_asc") {
-                var nA = a.dataset.name;
-                var nB = b.dataset.name;
-                return nA.localeCompare(nB);
-            }
-            return 0;
-        });
+      visibleCards.sort(function (a, b) {
+        if (sortValue === "price_asc" || sortValue === "price_desc") {
+          var pA = parseFloat(a.dataset.price);
+          var pB = parseFloat(b.dataset.price);
+          return sortValue === "price_asc" ? pA - pB : pB - pA;
+        } else if (sortValue === "name_asc") {
+          var nA = a.dataset.name;
+          var nB = b.dataset.name;
+          return nA.localeCompare(nB);
+        }
+        return 0;
+      });
     }
 
     // Re-append to grid to change visual order
@@ -104,56 +104,56 @@ function initProductsPage() {
   if (searchInput) searchInput.addEventListener("input", applyFilters);
   if (categoryFilter) categoryFilter.addEventListener("change", applyFilters);
   if (sortFilter) sortFilter.addEventListener("change", applyFilters);
-  
+
   // Wire up Add to Cart buttons
   var addBtns = grid.querySelectorAll(".add-to-cart-btn");
-  addBtns.forEach(function(btn) {
-      btn.addEventListener("click", function() {
-          var productId = this.dataset.id;
-          var productName = this.dataset.name;
-          addToCart(productId, productName);
-      });
+  addBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var productId = this.dataset.id;
+      var productName = this.dataset.name;
+      addToCart(productId, productName);
+    });
   });
-  
+
   // Fetch initial cart count
   updateCartCount();
 }
 
 function updateCartCount() {
-    fetch('get_cart_count.php')
-        .then(response => response.json())
-        .then(data => {
-            if (cartCountSpan) {
-                cartCountSpan.textContent = data.count || 0;
-            }
-        })
-        .catch(error => console.error('Error fetching cart count:', error));
+  fetch('get_cart_count.php')
+    .then(response => response.json())
+    .then(data => {
+      if (cartCountSpan) {
+        cartCountSpan.textContent = data.count || 0;
+      }
+    })
+    .catch(error => console.error('Error fetching cart count:', error));
 }
 
 // Cart functionality (Real-time DB backed)
 function addToCart(productId, productName) {
-    if(!productId) return;
-    
-    var formData = new FormData();
-    formData.append('product_id', productId);
-    formData.append('quantity', 1);
+  if (!productId) return;
 
-    fetch('add_to_cart.php', {
-        method: 'POST',
-        body: formData
-    })
+  var formData = new FormData();
+  formData.append('product_id', productId);
+  formData.append('quantity', 1);
+
+  fetch('add_to_cart.php', {
+    method: 'POST',
+    body: formData
+  })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            alert(productName + " added to cart!");
-            updateCartCount();
-        } else {
-            alert("Error: " + data.message);
-        }
+      if (data.success) {
+        alert(productName + " added to cart!");
+        updateCartCount();
+      } else {
+        alert("Error: " + data.message);
+      }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while adding to cart.');
+      console.error('Error:', error);
+      alert('An error occurred while adding to cart.');
     });
 }
 

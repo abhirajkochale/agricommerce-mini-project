@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS orders (
     category     VARCHAR(50),                           -- 'Grains' | 'Vegetables' | 'Fruits'
     quantity     INT            NOT NULL,               -- available stock in kg
     price        DECIMAL(10,2)  NOT NULL,               -- price per kg (Rs)
-    location     VARCHAR(255),
+    location     VARCHAR(100),
     user_id      INT,
     created_at   TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     product_id INT            NOT NULL,               -- FK → orders.id (the listing)
     quantity   INT            NOT NULL,
     price      DECIMAL(10,2)  NOT NULL,               -- price per kg at time of purchase
-    status     VARCHAR(20)    NOT NULL DEFAULT 'Pending', -- 'Pending' | 'Shipped' | 'Delivered'
+    status     VARCHAR(50)    NOT NULL DEFAULT 'Pending', -- 'Pending' | 'Shipped' | 'Delivered'
     FOREIGN KEY (order_id)   REFERENCES checkout_orders(id) ON DELETE CASCADE,
     FOREIGN KEY (farmer_id)  REFERENCES users(id)          ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES orders(id)         ON DELETE CASCADE

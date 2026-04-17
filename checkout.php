@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
 
 require 'db.php';
 
+
 // Check if cart is empty
 $user_id = $_SESSION['user_id'];
 $query = "SELECT SUM(quantity) AS total FROM cart WHERE user_id = ?";
