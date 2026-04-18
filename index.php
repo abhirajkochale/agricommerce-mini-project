@@ -54,7 +54,8 @@ if ($role === 'farmer') {
             <h1>Maximize Your Harvest Reach</h1>
             <p>Empowering you with tools to manage listings, track orders, and grow your agricultural business.</p>
             <div class="mt-lg">
-                <a href="farmer_dashboard.php" class="btn btn-primary" style="padding: 1.25rem 2.5rem; font-size: 1.1rem;">List New Crop</a>
+                <a href="farmer_dashboard.php" class="btn btn-primary"
+                    style="padding: 1.25rem 2.5rem; font-size: 1.1rem;">List New Crop</a>
             </div>
         </section>
 
@@ -104,12 +105,13 @@ if ($role === 'farmer') {
                 <div class="card border-top-accent">
                     <div style="font-size: 2rem; margin-bottom: 1rem;">📦</div>
                     <h3>Packaging Guide</h3>
-                    <p class="text-muted">Best practices for sustainable and protective packaging for fresh produce.</p>
+                    <p class="text-muted">Best practices for sustainable and protective packaging for fresh products.</p>
                 </div>
                 <div class="card border-top-orange">
                     <div style="font-size: 2rem; margin-bottom: 1rem;">💡</div>
                     <h3>Market Trends</h3>
-                    <p class="text-muted">Currently in demand: Organic Tomatoes and Hybrid Grains are seeing a price surge.</p>
+                    <p class="text-muted">Currently in demand: Organic Tomatoes and Hybrid Grains are seeing a price surge.
+                    </p>
                 </div>
             </div>
         </section>
@@ -120,7 +122,7 @@ if ($role === 'farmer') {
             <div class="welcome-bar mb-lg">
                 <div>
                     <h2 class="m-0">Welcome back, <?php echo htmlspecialchars($user_name); ?>!</h2>
-                    <p class="text-muted m-0">Ready to find some fresh produce today?</p>
+                    <p class="text-muted m-0">Ready to find some fresh products today?</p>
                 </div>
                 <div class="quick-links">
                     <a href="user_dashboard.php" class="quick-link-item">🛒 Marketplace</a>
@@ -131,11 +133,12 @@ if ($role === 'farmer') {
 
         <section class="hero-v2">
             <h1>Fresh from Farms,<br>Direct to Your Door.</h1>
-            <p>Connecting thousands of local farmers with buyers across the country. Experience the future of sustainable agriculture.</p>
-            
+            <p>Connecting thousands of local farmers with buyers across the country. Experience the future of sustainable
+                agriculture.</p>
+
             <form action="user_dashboard.php" method="GET" class="homepage-search">
                 <input type="text" name="search" placeholder="Search for wheat, mangoes, tomatoes..." required>
-                <button type="submit" class="search-btn">Find Produce</button>
+                <button type="submit" class="search-btn">Find Products</button>
             </form>
         </section>
 
@@ -167,17 +170,20 @@ if ($role === 'farmer') {
                 <div class="card border-top-primary">
                     <div style="font-size: 2.5rem; margin-bottom: 1rem;">👨‍🌾</div>
                     <h3>Farmer Focused</h3>
-                    <p class="text-muted">Direct-to-consumer sales with zero commission fees. List your crops in seconds and manage orders effortlessly.</p>
+                    <p class="text-muted">Direct-to-consumer sales with zero commission fees. List your crops in seconds and
+                        manage orders effortlessly.</p>
                 </div>
                 <div class="card border-top-accent">
                     <div style="font-size: 2.5rem; margin-bottom: 1rem;">🛡️</div>
                     <h3>Secure Transactions</h3>
-                    <p class="text-muted">Built-in fraud protection, encrypted sessions, and robust validation ensure your data and payments are always safe.</p>
+                    <p class="text-muted">Built-in fraud protection, encrypted sessions, and robust validation ensure your
+                        data and payments are always safe.</p>
                 </div>
                 <div class="card border-top-orange">
                     <div style="font-size: 2.5rem; margin-bottom: 1rem;">📈</div>
                     <h3>Market Analytics</h3>
-                    <p class="text-muted">Real-time stats for admins and transparent pricing for buyers, creating a fair and efficient marketplace for all.</p>
+                    <p class="text-muted">Real-time stats for admins and transparent pricing for buyers, creating a fair and
+                        efficient marketplace for all.</p>
                 </div>
             </div>
         </section>

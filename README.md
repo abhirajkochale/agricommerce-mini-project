@@ -40,6 +40,12 @@ A web-based agricultural marketplace built as a college mini project. It lets fa
 - `update_order_status.php`, `update_all_orders_status.php` – Order status updates
 - `db.php` – MySQL connection
 
+**Database Setup Queries**
+- `database.sql` – Main project database schema (users, crops, cart, orders)
+- `feedback_setup.sql` – Additional schema for feedback system
+- `auth_setup.sql` – Table setup for authentication
+- `setup_triggers.sql` – SQL triggers for automated tasks
+
 **Includes**
 - `includes/header.php` – Shared nav header
 - `includes/footer.php` – Shared footer
@@ -60,27 +66,14 @@ A web-based agricultural marketplace built as a college mini project. It lets fa
 2. Go to `http://localhost/phpmyadmin`
 3. Run this to get started:
 
-```sql
-CREATE DATABASE IF NOT EXISTS agroconnect;
-```
+3. Run `database.sql` and `feedback_setup.sql` in the SQL tab to set up the entire schema.
 
-4. Select the `agroconnect` database and create the orders table:
-
-```sql
-CREATE TABLE IF NOT EXISTS orders (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  farmer_name VARCHAR(100) NOT NULL,
-  email VARCHAR(100) NOT NULL,
-  crop_name VARCHAR(100) NOT NULL,
-  category VARCHAR(50) NOT NULL,
-  quantity INT NOT NULL,
-  price INT NOT NULL,
-  location VARCHAR(100) NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-> You'll also need `users` and `cart` tables for the auth + cart features. Check `db.php` or any attached SQL dump for the full schema.
+### Core Schema Overview:
+- `users`: Role-based authentication (admin, farmer, user)
+- `crops`: Product listings managed by farmers
+- `cart`: Storage for items added by buyers
+- `checkout_orders` & `order_items`: Comprehensive ordering system
+- `feedback`: Customer ratings and messages
 
 ---
 
